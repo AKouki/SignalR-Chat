@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section scripts {
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.1.min.js"></script>
+    <script src="~/Scripts/knockout-3.4.2.js"></script>
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <script src="~/Scripts/MyChat.js"></script>
+    <script src="~/Scripts/MyScript.js"></script>
+    <script src="~/signalr/hubs"></script>
+}
+
+<div class="row main-container">
+    <div class="col-md-2 left">
+        <div class="header">
+            <h5>Chat Rooms</h5>
+            <a href="#" id="create-room" data-toggle="modal" data-target="#create-room-modal"><span class="glyphicon glyphicon-plus"></span></a>
+        </div>
+        <div class="rooms">
+            <div>
+                <ul id="room-list" data-bind="foreach: chatRooms">
+                    <li><a href="#" data-bind="text: $data.name, clickLink: joinRoom"></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="user">
+            <div class="user-avatar">
+                <img class="avatar-icon2" src="~/Content/icons/avatar1.png" data-bind="attr: { src: myAvatar() }" />
+            </div>
+            <div class="user-name">
+                <a href="#" data-bind="text: myName"></a>
+            </div>
+            <div class="user-signout">
+                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <a href="javascript:document.getElementById('logoutForm').submit()" title="Sign Out"><span class="glyphicon glyphicon-log-out"></span></a>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 middle">
+        <div class="chat-header">
+            <h5 id="joinedRoom">Lobby</h5>
+            <button data-toggle="modal" data-target="#remove-room-modal" class="btnDeleteRoom glyphicon glyphicon-remove"></button>
+        </div>
+        <div class="chat-body better-scrollbar">
+            <ul data-bind="foreach: chatMessages">
+                <li>
+                    <div class="chat-message" data-bind="css: $data.isMine() === true ? 'ismine' : 'isother'">
+                        <div class="left-side">
+                            <img src="~/Content/icons/avatar1.png" class="message-avatar" data-bind="attr: { src: $data.avatar }" />
+                        </div>
+                        <div class="message-content">
+                            <span class="author" data-bind="text:$data.from"></span>
+                            <span class="timestamp">
+                                <i class="glyphicon glyphicon-time"></i>
+                                <span data-bind="text:$data.timestamp"></span>
+                            </span>
+                            <span class="content" data-bind="html:$data.content"></span>
+                        </div>
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+        <div class="chat-input">
+            <i class="glyphicon glyphicon-send"></i>
+            <div class="actions">
+                <label for="btnUpload" class="custom-file-upload">
+                    <img src="~/Content/icons/photo1.png" alt="" />
+                </label>
+                <input type="file" id="btnUpload" accept="image/*" name="files" />
+                <a id="emojibtn" href="#"><img src="~/Content/icons/smile1.png" /></a>
+            </div>
+            <div class="emoticon-container hidden" id="emojis-container">
+                <a href="#">
+                    <input type="hidden" value=":)" />
+                    <img src="~/Content/emojis/emoji1.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":P" />
+                    <img src="~/Content/emojis/emoji2.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":O" />
+                    <img src="~/Content/emojis/emoji3.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":-)" />
+                    <img src="~/Content/emojis/emoji4.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value="B|" />
+                    <img src="~/Content/emojis/emoji5.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":D" />
+                    <img src="~/Content/emojis/emoji6.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value="<3" />
+                    <img src="~/Content/emojis/emoji7.png" />
+                </a>
+            </div>
+            <input id="chat-message" type="text" value="" data-bind="value:message, valueUpdate: 'afterkeydown', event: { keypress: onEnter }" placeholder="What's on your mind?" />
+        </div>
+    </div>
+    <div class="col-md-3 right">
+        <div class="header">
+            <h5>Who's Here (<span data-bind="text: filteredChatUsers().length">0</span>)</h5>
+        </div>
+        <div class="chat-users better-scrollbar">
+            <ul id="user-list" data-bind="foreach: filteredChatUsers">
+                <li>
+                    <div class="user-inner">
+                        <div class="left-side">
+                            <img src="~/Content/icons/avatar1.png" data-bind="attr: { src:$data.avatar }" class="user-avatar" />
+                        </div>
+                        <div class="right-side">
+                            <input type="hidden" class="username" data-bind="value:$data.userName" />
+                            <span class="author" data-bind="text: $data.displayName"></span>
+                            <small data-bind="text: $data.device"></small>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="search-user">
+            <input type="text" class="" placeholder="Search someone..." data-bind="value: filter, valueUpdate: 'afterkeydown'" />
+        </div>
+    </div>
+</div>
+
+<!-- CREATE ROOM MODAL -->
+<div class="modal" id="create-room-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Create Room</h4>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="roomName" placeholder="Room name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click: createRoom">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REMOVE ROOM MODAL -->
+<div class="modal" id="remove-room-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Room</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this Chat Room?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click: deleteRoom">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-dismissible alert-warning hidden" id="errorAlert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <p data-bind="text:serverInfoMessage"></p>
+</div>

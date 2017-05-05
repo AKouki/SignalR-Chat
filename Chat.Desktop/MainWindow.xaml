@@ -1,0 +1,342 @@
+﻿<Window x:Class="Chat.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Loaded="Window_Loaded"
+        Background="#EEE"
+        Title="Chat"
+        WindowStartupLocation="CenterScreen"
+        Height="617"
+        Width="1077">
+
+    <Window.Resources>
+        <Style x:Key="TransparentStyle"
+               TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Height" Value="28"></Setter>
+            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="Padding"
+                    Value="0"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border"
+                                VerticalAlignment="Center"
+                                BorderThickness="0"
+                                Padding="8 5">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected"
+                                     Value="true">
+                                <Setter TargetName="Border"
+                                        Property="Background"
+                                        Value="#FF94C5EE" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver"
+                                     Value="true">
+                                <Setter TargetName="Border"
+                                        Property="Background"
+                                        Value="#FF70AEE0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+    </Window.Resources>
+
+
+    <Grid x:Name="mainGrid"
+          ShowGridLines="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="55"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="250"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Rectangle Grid.Row="0"
+                   Grid.Column="0"
+                   Fill="#157cce" />
+        <Rectangle Grid.Row="1"
+                   Grid.Column="0"
+                   Fill="#157cce" />
+        <Rectangle Grid.Row="2"
+                   Grid.Column="0"
+                   Fill="#157cce" />
+
+        <!--Room Header-->
+        <StackPanel Grid.Row="0"
+                    Grid.Column="0"
+                    Orientation="Horizontal">
+            <TextBlock TextAlignment="Left"
+                       Margin="10"
+                       Foreground="White"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Width="150px"
+                       VerticalAlignment="Center">CHAT ROOMS</TextBlock>
+            <Button Background="Transparent"
+                    x:Name="btnCreateRoom"
+                    Click="btnCreateRoom_Click"
+                    Width="19"
+                    Height="19"
+                    Cursor="Hand"
+                    Style="{StaticResource TransparentStyle}">
+                <StackPanel>
+                    <Image Source="Resources/plus-circle.png"></Image>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!--Room List-->
+        <DockPanel Background="#157cce"
+                    Grid.Row="1"
+                    Grid.Column="0" >
+            <ListBox x:Name="ListBoxRooms"
+                     SelectionChanged="ListBoxRooms_SelectionChanged"
+                     VerticalContentAlignment="Stretch"
+                     FontSize="14px"
+                     Foreground="White"
+                     Background="#157cce"
+                     Padding="0 0 0 0"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Height="Auto"
+                     ItemsSource="{Binding Rooms}"
+                     BorderBrush="{x:Null}">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Name}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+            </ListBox>
+        </DockPanel>
+
+        <!--User Profile Info-->
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Background="#1a6baa">
+            <Border BorderBrush="White" BorderThickness="2"
+                    CornerRadius="20"
+                    Margin="5 0"
+                    Padding="1 1"
+                    Height="40" Width="40">
+                <Image x:Name="imgMyAvatar" 
+                    Source="Resources/avatar_circle.png"
+                   Margin="0"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                   Width="32"
+                   Height="32"></Image>
+            </Border>
+            <TextBlock Width="120" 
+                       Text="Username"
+                       x:Name="txtUsername"
+                       VerticalAlignment="Center"
+                       Margin="2 0"
+                       FontSize="12"
+                       Foreground="White"></TextBlock>
+            <Button Style="{StaticResource TransparentStyle}"
+                    Cursor="Hand"
+                    x:Name="btnLogout"
+                    Click="btnLogout_Click"
+                    Width="18"
+                    Height="17">
+                <StackPanel>
+                    <Image Source="Resources/sign-out.png"></Image>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!--Middle Room Name-->
+        <Border BorderThickness="0 0 0 1"
+                Background="White"
+                    Grid.Row="0"
+                    Grid.Column="1">
+            <DockPanel>
+                <TextBlock Text="Room Name"
+                           x:Name="txtRoomName"
+                           Width="300"
+                           FontSize="18"
+                           FontWeight="Normal"
+                           Foreground="#555"
+                           Padding="10 0"
+                           VerticalAlignment="Center"
+                           FontFamily="Trebuchet MS">
+                </TextBlock>
+
+                <Button Style="{StaticResource TransparentStyle}"
+                        Cursor="Hand"
+                        x:Name="btnDeleteRoom"
+                        Click="btnDeleteRoom_Click"
+                        HorizontalAlignment="Right"
+                        Margin="0 0 10 0"
+                        Width="16"
+                        Height="16">
+                    <StackPanel>
+                        <Image Source="Resources/remove.png"></Image>
+                    </StackPanel>
+                </Button>
+
+            </DockPanel>
+        </Border>
+
+        <!--Middle Chat Body-->
+        <Border BorderBrush="#CCC" BorderThickness="0 0 0 1"
+                Background="White"
+                    Grid.Row="1"
+                    Grid.Column="1">
+
+            <DockPanel Background="White">
+                <ListView HorizontalAlignment="Stretch"
+                          x:Name="ListViewMessages"
+                          ItemsSource="{Binding Messages}"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}">
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="10 6">
+                                <Image Source="{Binding B64Source}" Width="32" Height="32" Stretch="Fill" RenderOptions.BitmapScalingMode="HighQuality" Margin="8 0 8 10">
+                                    <Image.Clip>
+                                        <EllipseGeometry
+                                          RadiusX="16"
+                                          RadiusY="16"
+                                          Center="16,16">
+                                        </EllipseGeometry>
+                                    </Image.Clip>
+                                </Image>
+
+
+                                <Border BorderThickness="1 1 1 1"
+                                        Padding="8 6"
+                                        CornerRadius="3 3 3 3"
+                                        BorderBrush="#eee"
+                                        Background="#f5f5f5">
+                                    <StackPanel Orientation="Vertical">
+                                        <DockPanel Height="16">
+                                            <TextBlock Text="{Binding From}" MinWidth="140" FontSize="11" Foreground="#1a6baa" FontWeight="Bold"></TextBlock>
+                                            <TextBlock Text="{Binding Timestamp}" HorizontalAlignment="Right" FontSize="11" Foreground="#777"></TextBlock>
+                                        </DockPanel>
+                                        <TextBlock Text="{Binding Content}" FontSize="14" MaxWidth="400" TextWrapping="Wrap" Foreground="#777777" Padding="0 2 0 2"></TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+            </DockPanel>
+        </Border>
+
+        <!--Input Message -->
+        <DockPanel Grid.Row="2" Grid.Column="1">
+            <Button x:Name="btnSend" Click="btnSend_Click" DockPanel.Dock="Right" Cursor="Hand" HorizontalAlignment="Right" Height="50" Width="45" Style="{StaticResource TransparentStyle}" Background="#FFBD4A4A">
+                <Image Source="Resources/send.png" Width="25" Height="28"></Image>
+            </Button>
+            <TextBox x:Name="txtMessage"
+                     PreviewKeyDown="txtMessage_PreviewKeyDown"
+                     Background="#f2f2f2"
+                     Foreground="#555555"
+                     BorderBrush="#EEE"
+                     BorderThickness="0 0 1 0"
+                     VerticalContentAlignment="Center"
+                     FontSize="14"
+                     Padding="10 0">
+            </TextBox>
+        </DockPanel>
+
+        <!--Right > Who's Here -->
+        <Border BorderThickness="1 0 0 1"
+                Background="White"
+                    Grid.Row="0"
+                    Grid.Column="2">
+            <DockPanel>
+                <TextBlock Text="WHO'S HERE (0)"
+                           x:Name="txtOnlineCounter"
+                           FontSize="16"
+                           FontWeight="Normal"
+                           Foreground="#555"
+                           Padding="10 0"
+                           FontFamily="Segoe UI"
+                           VerticalAlignment="Center">
+                </TextBlock>
+            </DockPanel>
+        </Border>
+
+        <!--Right > User List-->
+        <Border BorderBrush="#EEE" BorderThickness="1 0 0 1"
+                Background="White"
+                    Grid.Row="1"
+                    Grid.Column="2">
+
+            <DockPanel Background="White">
+                <ListView HorizontalAlignment="Stretch"
+                          x:Name="ListViewUsers"
+                          SelectionChanged="ListViewUsers_SelectionChanged"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}">
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding B64Source}" Width="32" Height="32" Stretch="Fill" RenderOptions.BitmapScalingMode="HighQuality" Margin="8 5 8 5">
+                                    <Image.Clip>
+                                        <EllipseGeometry
+                                          RadiusX="16"
+                                          RadiusY="16"
+                                          Center="16,16">
+                                        </EllipseGeometry>
+                                    </Image.Clip>
+                                </Image>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding DisplayName}" FontSize="14" Foreground="#555" Height="18"></TextBlock>
+                                    <TextBlock Text="{Binding Device}" FontSize="12" Foreground="#999"></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+            </DockPanel>
+        </Border>
+
+        <!--Right > Search User -->
+        <DockPanel Grid.Row="2" Grid.Column="2">
+            <TextBox Background="#f2f2f2"
+                     x:Name="txtSearchUser"
+                     Tag="Enter your name..."
+                     TextChanged="txtSearchUser_TextChanged"
+                     Foreground="#555555"
+                     BorderBrush="#ccc"
+                     BorderThickness="1 0 0 0"
+                     VerticalContentAlignment="Center"
+                     FontSize="14"
+                     Text=""
+                     Padding="10 0"
+                     ></TextBox>
+        </DockPanel>
+
+    </Grid>
+
+</Window>

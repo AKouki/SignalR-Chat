@@ -1,0 +1,22 @@
+﻿<Window x:Class="Chat.Desktop.Views.CreateChatRoom"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Loaded="Window_Loaded"
+        Title="Create new Chat Room" Height="175" Width="350" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style x:Key="MyStyle"
+               TargetType="Button">
+            <Setter Property="Background"
+                    Value="#FF5D8A9E"></Setter>
+            <Setter Property="Foreground"
+                    Value="White"></Setter>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Orientation="Vertical" Margin="10 10 10 5">
+        <TextBlock Text="The name of the new Chat Room" FontSize="16" Foreground="#777" Margin="0 0 0 5"></TextBlock>
+        <TextBox x:Name="txtNewRoomName" Height="36" Padding="5 0 5 0" FontSize="14" Foreground="#777" TextAlignment="Left" VerticalContentAlignment="Center"></TextBox>
+        <Button Cursor="Hand" IsDefault="True" x:Name="btnCreateRoom" Click="btnCreateRoom_Click" Height="32" Content="Create" Style="{StaticResource MyStyle}" Width="150" Margin="0 10"></Button>
+    </StackPanel>
+</Window>
