@@ -61,3 +61,10 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# Other
+###############################################################################
+Chat.Web/Scripts/* linguist-vendored
+Chat.Web/Scripts/MyChat.js linguist-vendored=false
+Chat.Web/Scripts/MyScript.js linguist-vendored=false
