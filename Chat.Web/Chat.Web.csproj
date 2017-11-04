@@ -20,6 +20,8 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -178,9 +180,9 @@
     <Compile Include="Helpers\FileValidator.cs" />
     <Compile Include="Helpers\StaticResources.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
-    <Compile Include="Migrations\201703310518527_Init.cs" />
-    <Compile Include="Migrations\201703310518527_Init.Designer.cs">
-      <DependentUpon>201703310518527_Init.cs</DependentUpon>
+    <Compile Include="Migrations\201711041223509_Initial.cs" />
+    <Compile Include="Migrations\201711041223509_Initial.Designer.cs">
+      <DependentUpon>201711041223509_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -279,8 +281,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201703310518527_Init.resx">
-      <DependentUpon>201703310518527_Init.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201711041223509_Initial.resx">
+      <DependentUpon>201711041223509_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
