@@ -1,7 +1,7 @@
 # SignalR-Chat
-A real-time chat application using ASP.NET SignalR and KnockoutJS, for Web, Desktop and Mobile (Android)
+A real-time chat application using ASP.NET SignalR and KnockoutJS. Available for Web, Desktop and Mobile (Android)
 
-Find Mobile version Here: [Chat.Mobile](https://github.com/AKouki/SignalR-Chat.Mobile)
+Find mobile version here: [Chat.Mobile](https://github.com/AKouki/SignalR-Chat.Mobile)
 
 ![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/Content/screenshots/mockup1.png)
 ![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/Content/screenshots/mockup2.png)
@@ -21,11 +21,11 @@ In order to run Desktop or Mobile application you need first to run Chat.Web pro
 3. Resolve any missing/required nuget package
 
 ### For Chat.Web
-1. Build the Database. Open `Package Manager Console` and run the following commands:
-`sqllocaldb.exe stop v11.0`
-`sqllocaldb delete v11.0`
-and
-`update-database`
+1. Build Database. Open `Package Manager Console` and run the following commands: <br />
+`sqllocaldb.exe stop` <br />
+`sqllocaldb.exe delete` <br />
+`sqllocaldb.exe start` <br />
+`update-database` <br />
 2. That's all... Run the Project!
 
 ### For Chat.Desktop
