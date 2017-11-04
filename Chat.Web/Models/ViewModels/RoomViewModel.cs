@@ -9,11 +9,5 @@ namespace Chat.Web.Models.ViewModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
-        public RoomViewModel(Room room)
-        {
-            this.Id = room.Id;
-            this.Name = room.Name;
-        }
     }
 }

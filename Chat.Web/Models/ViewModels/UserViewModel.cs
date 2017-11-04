@@ -12,14 +12,5 @@ namespace Chat.Web.Models.ViewModels
         public string Avatar { get; set; }
         public string CurrentRoom { get; set; }
         public string Device { get; set; }
-
-        public UserViewModel(ApplicationUser applicationUser)
-        {
-            this.Username = applicationUser.UserName;
-            this.DisplayName = applicationUser.DisplayName;
-            this.Avatar = applicationUser.Avatar;
-            this.CurrentRoom = "";
-            this.Device = "Unknown";
-        }
     }
 }

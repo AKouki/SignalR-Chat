@@ -9,6 +9,8 @@ using Microsoft.AspNet.SignalR;
 using Chat.Web.Hubs;
 using Chat.Web.Models.ViewModels;
 using Chat.Web.Models;
+using System.Text.RegularExpressions;
+using AutoMapper;
 
 namespace Chat.Web.Controllers
 {
@@ -50,16 +52,27 @@ namespace Chat.Web.Controllers
 
                         using (var db = new ApplicationDbContext())
                         {
-                            // Get sender
-                            var user = ChatHub._Connections.Where(u => u.Username == User.Identity.Name).First();
+                            // Get sender & chat room
+                            var senderViewModel = ChatHub._Connections.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                            var sender = db.Users.Where(u => u.UserName == senderViewModel.Username).FirstOrDefault();
+                            var room = db.Rooms.Where(r => r.Name == senderViewModel.CurrentRoom).FirstOrDefault();
 
                             // Build message
-                            var repository = new Repository(db);
-                            var message = repository.AddMessage(user.Username, user.CurrentRoom, htmlImage);
+                            Message msg = new Message()
+                            {
+                                Content = Regex.Replace(htmlImage, @"(?i)<(?!img|a|/a|/img).*?>", String.Empty),
+                                Timestamp = DateTime.Now.Ticks.ToString(),
+                                FromUser = sender,
+                                ToRoom = room
+                            };
+
+                            db.Messages.Add(msg);
+                            db.SaveChanges();
 
                             // Send image-message to group
+                            var messageViewModel = Mapper.Map<Message, MessageViewModel>(msg);
                             var hub = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-                            hub.Clients.Group(user.CurrentRoom).newMessage(message);
+                            hub.Clients.Group(senderViewModel.CurrentRoom).newMessage(messageViewModel);
                         }
 
                         return Json("Success");
