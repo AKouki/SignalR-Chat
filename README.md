@@ -22,9 +22,6 @@ In order to run Desktop or Mobile application you need first to run Chat.Web pro
 
 ### For Chat.Web
 1. Build Database. Open `Package Manager Console` and run the following commands: <br />
-`sqllocaldb.exe stop` <br />
-`sqllocaldb.exe delete` <br />
-`sqllocaldb.exe start` <br />
 `update-database` <br />
 2. That's all... Run the Project!
 
