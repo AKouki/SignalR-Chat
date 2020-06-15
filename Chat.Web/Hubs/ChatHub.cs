@@ -257,8 +257,11 @@ namespace Chat.Web.Hubs
                     userViewModel.Device = GetDevice();
                     userViewModel.CurrentRoom = "";
 
-                    _Connections.Add(userViewModel);
-                    _ConnectionsMap.Add(IdentityName, Context.ConnectionId);
+                    if (!_Connections.Any(u => u.Username == IdentityName))
+                    {
+                        _Connections.Add(userViewModel);
+                        _ConnectionsMap.Add(IdentityName, Context.ConnectionId);
+                    }
 
                     Clients.Caller.getProfileInfo(user.DisplayName, user.Avatar);
                 }
@@ -294,8 +297,9 @@ namespace Chat.Web.Hubs
 
         public override Task OnReconnected()
         {
-            var user = _Connections.Where(u => u.Username == IdentityName).First();
-            Clients.Caller.getProfileInfo(user.DisplayName, user.Avatar);
+            var user = _Connections.Where(u => u.Username == IdentityName).FirstOrDefault();
+            if (user != null)
+                Clients.Caller.getProfileInfo(user.DisplayName, user.Avatar);
 
             return base.OnReconnected();
         }
