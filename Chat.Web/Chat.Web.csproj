@@ -203,8 +203,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\New Text Document.txt" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\emojis\emoji1.png" />
     <Content Include="Content\emojis\emoji2.png" />
     <Content Include="Content\emojis\emoji3.png" />
@@ -216,26 +214,24 @@
     <Content Include="Content\icons\avatar2.png" />
     <Content Include="Content\icons\avatar3.png" />
     <Content Include="Content\icons\avatar4.png" />
-    <Content Include="Content\icons\photo1.png" />
-    <Content Include="Content\icons\smile1.png" />
     <Content Include="Content\screenshots\android.png" />
     <Content Include="Content\screenshots\desktop.png" />
     <Content Include="Content\screenshots\laptop.png" />
     <Content Include="Content\screenshots\mockup1.png" />
     <Content Include="Content\screenshots\mockup2.png" />
+    <Content Include="Content\Site.css">
+      <DependentUpon>Site.scss</DependentUpon>
+    </Content>
     <Content Include="Content\Site.min.css">
       <DependentUpon>Site.css</DependentUpon>
     </Content>
     <Content Include="favicon.ico" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Content\Site.less" />
-    <Content Include="Content\Site.css.map">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
+    <Content Include="Content\Site.scss" />
     <None Include="Properties\PublishProfiles\wtt.pubxml" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
@@ -281,9 +277,6 @@
     <Folder Include="Content\uploads\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>

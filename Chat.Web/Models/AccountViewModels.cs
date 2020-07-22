@@ -23,6 +23,7 @@ namespace Chat.Web.Models
         public string Username { get; set; }
 
         [Required]
+        [Display(Name = "Display Name")]
         public string DisplayName { get; set; }
 
         public string Avatar { get; set; }
