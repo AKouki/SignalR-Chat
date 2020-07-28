@@ -104,7 +104,7 @@ namespace Chat.Web.Hubs
             try
             {
                 var user = _Connections.Where(u => u.Username == IdentityName).FirstOrDefault();
-                if (user.CurrentRoom != roomName)
+                if (user != null && user.CurrentRoom != roomName)
                 {
                     // Remove user from others list
                     if (!string.IsNullOrEmpty(user.CurrentRoom))
