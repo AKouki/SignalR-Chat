@@ -212,7 +212,7 @@ ul {
                 min-width: 220px;
                 max-width: 500px;
 
-                img {
+                img.post-image {
                     width: 100%;
                     height: 100%;
                 }
@@ -297,6 +297,10 @@ ul {
 
             i {
                 color: #aaa;
+                cursor: pointer;
+                &:hover {
+                    color: #555;
+                }
             }
 
             label {

@@ -17,9 +17,9 @@
     $('#emojis-container').on('click', 'a', function () {
         var value = $("input", $(this)).val();
         var input = $('#chat-message');
-
         input.val(input.val() + value);
         input.focus();
+        input.change();
     });
 
     // Show/Hide Emoji Window
@@ -33,33 +33,11 @@
         }
     });
 
-    $("#chat-message").click(function () {
+    $("#chat-message, #btn-send-message").click(function () {
         $("#emojis-container").addClass("hidden")
     });
 
-    // Upload image with Ajax
-    $("#btnUpload").change(function () {
-
-        var data = new FormData();
-        var file = document.getElementById("btnUpload").files[0];
-        data.append("btnUpload", file);
-
-        $.ajax({
-            type: "POST",
-            url: '/Home/Upload',
-            data: data,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                alert(response);
-            },
-            error: function (error) {
-                alert(error);
-            }
-        });
-
-        console.log(files);
-
+    $('.modal').on('hidden.bs.modal', function () {
+        $("input").val("");
     });
 });

@@ -154,7 +154,7 @@ ul {
         color: #777;
         min-width: 220px;
         max-width: 500px; }
-        .main-content .chat-body .chat-message .message-content img {
+        .main-content .chat-body .chat-message .message-content img.post-image {
           width: 100%;
           height: 100%; }
         .main-content .chat-body .chat-message .message-content span {
@@ -206,7 +206,10 @@ ul {
     .main-content .chat-input .actions {
       padding: 0 10px; }
       .main-content .chat-input .actions i {
-        color: #aaa; }
+        color: #aaa;
+        cursor: pointer; }
+        .main-content .chat-input .actions i:hover {
+          color: #555; }
       .main-content .chat-input .actions label {
         margin-bottom: 0; }
       .main-content .chat-input .actions #emojibtn {

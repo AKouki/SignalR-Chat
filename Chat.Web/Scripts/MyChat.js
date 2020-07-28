@@ -5,8 +5,13 @@
         console.log("SignalR started");
         model.roomList();
         model.userList();
-        model.joinedRoom = "Lobby";
-        model.joinRoom();
+
+        setTimeout(function () {
+            if (model.chatRooms().length > 0) {
+                model.joinedRoom(model.chatRooms()[0].name())
+                model.joinRoom();
+            }
+        }, 250);
     });
 
     // Client Operations
@@ -40,11 +45,10 @@
 
     $('ul#room-list').on('click', 'a', function () {
         var roomName = $(this).text();
-        model.joinedRoom = roomName;
+        model.joinedRoom(roomName);
         model.joinRoom();
         model.chatMessages.removeAll();
         $("input#iRoom").val(roomName);
-        $("#joinedRoom").text(roomName);
         $('#room-list a').removeClass('active');
         $(this).addClass('active');
     });
@@ -67,8 +71,13 @@
         model.serverInfoMessage(message);
         $("#errorAlert").removeClass("hidden").show().delay(5000).fadeOut(500);
 
-        // Join to the first room in list
-        $("ul#room-list li a")[0].click();
+        if (model.chatRooms().length == 0) {
+            model.joinedRoom("");
+        }
+        else {
+            // Join to the first room in list
+            $("ul#room-list li a")[0].click();
+        }
     };
 
     var Model = function () {
@@ -106,13 +115,13 @@
         // Server Operations
         sendNewMessage: function () {
             var self = this;
-            chatHub.server.send(self.joinedRoom, self.message());
+            chatHub.server.send(self.joinedRoom(), self.message());
             self.message("");
         },
 
         joinRoom: function () {
             var self = this;
-            chatHub.server.join(self.joinedRoom).done(function () {
+            chatHub.server.join(self.joinedRoom()).done(function () {
                 self.userList();
                 self.messageHistory();
             });
@@ -130,7 +139,7 @@
 
         userList: function () {
             var self = this;
-            chatHub.server.getUsers(self.joinedRoom).done(function (result) {
+            chatHub.server.getUsers(self.joinedRoom()).done(function (result) {
                 self.chatUsers.removeAll();
                 for (var i = 0; i < result.length; i++) {
                     self.chatUsers.push(new ChatUser(result[i].Username,
@@ -150,12 +159,12 @@
 
         deleteRoom: function () {
             var self = this;
-            chatHub.server.deleteRoom(self.joinedRoom);
+            chatHub.server.deleteRoom(self.joinedRoom());
         },
 
         messageHistory: function () {
             var self = this;
-            chatHub.server.getMessageHistory(self.joinedRoom).done(function (result) {
+            chatHub.server.getMessageHistory(self.joinedRoom()).done(function (result) {
                 self.chatMessages.removeAll();
                 for (var i = 0; i < result.length; i++) {
                     var isMine = result[i].From == self.myName();
@@ -200,6 +209,27 @@
             });
             self.chatUsers.remove(temp);
         },
+
+        uploadFiles: function () {
+            console.log('hello')
+            var data = new FormData();
+            var file = document.getElementById("btnUpload").files[0];
+            data.append("btnUpload", file);
+
+            $.ajax({
+                type: "POST",
+                url: '/Home/Upload',
+                data: data,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            });
+        }
     };
 
     // Represent server data

@@ -27,7 +27,7 @@
         </div>
         <div class="rooms">
             <ul id="room-list" data-bind="foreach: chatRooms">
-                <li><a href="#" data-bind="text: $data.name, clickLink: joinRoom"></a></li>
+                <li><a href="#" data-bind="text: $data.name, clickLink: joinRoom, css: { active: $root.joinedRoom() == $data.name()}"></a></li>
             </ul>
         </div>
         <div class="user d-flex align-items-center">
@@ -42,9 +42,14 @@
             </div>
         </div>
     </div>
-    <div class="main-content">
+    <div class="main-content" data-bind="visible: joinedRoom().length == 0">
+        <span class="m-auto">
+            Please select room to join!
+        </span>
+    </div>
+    <div class="main-content" data-bind="visible: joinedRoom().length > 0">
         <div class="chat-header d-flex justify-content-between align-items-center">
-            <h5 id="joinedRoom">Lobby</h5>
+            <h5 id="joinedRoom" data-bind="text: joinedRoom()">Lobby</h5>
             <button data-toggle="modal" data-target="#remove-room-modal" class="btnDeleteRoom">
                 <i class="fas fa-times"></i>
             </button>
@@ -77,11 +82,11 @@
                 <label for="btnUpload" class="custom-file-upload">
                     <i class="far fa-image"></i>
                 </label>
-                <input type="file" id="btnUpload" accept="image/*" name="files" />
+                <input type="file" id="btnUpload" accept="image/*" name="files" data-bind="event: {change: uploadFiles}" />
                 <a id="emojibtn" href="#">
                     <i class="far fa-smile"></i>
                 </a>
-                <i class="fas fa-paper-plane"></i>
+                <i class="fas fa-paper-plane" id="btn-send-message" data-bind="click: sendNewMessage"></i>
             </div>
             <div class="emoticon-container hidden" id="emojis-container">
                 <a href="#">
