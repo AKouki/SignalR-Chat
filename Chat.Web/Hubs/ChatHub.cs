@@ -7,6 +7,7 @@ using Chat.Web.Models;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using System.Data.Entity.Validation;
 
 namespace Chat.Web.Hubs
 {
@@ -78,24 +79,38 @@ namespace Chat.Web.Hubs
                     var room = db.Rooms.Where(r => r.Name == roomName).FirstOrDefault();
 
                     // Create and save message in database
-                    Message msg = new Message()
+                    try
                     {
-                        Content = Regex.Replace(message, @"(?i)<(?!img|a|/a|/img).*?>", String.Empty),
-                        Timestamp = DateTime.Now.Ticks.ToString(),
-                        FromUser = user,
-                        ToRoom = room
-                    };
-                    db.Messages.Add(msg);
-                    db.SaveChanges();
+                        Message msg = new Message()
+                        {
+                            Content = Regex.Replace(message, @"(?i)<(?!img|a|/a|/img).*?>", String.Empty),
+                            Timestamp = DateTime.Now.Ticks.ToString(),
+                            FromUser = user,
+                            ToRoom = room
+                        };
+                        db.Messages.Add(msg);
+                        db.SaveChanges();
 
-                    // Broadcast the message
-                    var messageViewModel = Mapper.Map<Message, MessageViewModel>(msg);
-                    Clients.Group(roomName).newMessage(messageViewModel);
+                        // Broadcast the message
+                        var messageViewModel = Mapper.Map<Message, MessageViewModel>(msg);
+                        Clients.Group(roomName).newMessage(messageViewModel);
+                    }
+                    catch (DbEntityValidationException ex)
+                    {
+                        foreach (var errors in ex.EntityValidationErrors)
+                        {
+                            foreach (var validationError in errors.ValidationErrors)
+                            {
+                                string errorMessage = validationError.ErrorMessage;
+                                throw new Exception(errorMessage);
+                            }
+                        }
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Clients.Caller.onError("Message not send!");
+                Clients.Caller.onError(ex.Message);
             }
         }
 
