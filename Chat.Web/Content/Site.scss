@@ -14,6 +14,19 @@ ul {
     height: 100vh;
 }
 
+.alert-top-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px;
+}
+
+.inner-alert {
+    margin: 0 auto;
+    max-width: 400px;
+}
+
 .login-container,
 .register-container {
     width: 350px;
