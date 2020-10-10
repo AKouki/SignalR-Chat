@@ -1,0 +1,40 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="login-container">
+        <img class="profile-avatar" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+        <form id="account" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.UserName"></label>
+                <input asp-for="Input.UserName" class="form-control" />
+                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-check">
+                <label asp-for="Input.RememberMe">
+                    <input asp-for="Input.RememberMe" class="form-check-input" />
+                    @Html.DisplayNameFor(m => m.Input.RememberMe)
+                </label>
+            </div>
+            <button type="submit" class="btn btn-sign-in">Sign in</button>
+            <div class="form-group">
+                @*<a class="btn btn-link px-0" id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>*@
+                <a class="btn btn-link px-0" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

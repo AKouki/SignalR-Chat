@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Chat.Web.Models;
-using Chat.Web.Models.ViewModels;
+using Chat.Web.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace Chat.Web.Mappings
 {
@@ -14,6 +14,7 @@ namespace Chat.Web.Mappings
         {
             CreateMap<ApplicationUser, UserViewModel>()
                 .ForMember(dst => dst.Username, opt => opt.MapFrom(x => x.UserName));
+            CreateMap<UserViewModel, ApplicationUser>();
         }
     }
 }

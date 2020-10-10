@@ -1,0 +1,180 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="alert alert-warning alert-dismissible d-none" id="errorAlert" role="alert">
+    <span data-bind="text:serverInfoMessage"></span>
+    <button type="button" class="close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="app">
+    <div class="sidebar">
+        <div class="header">
+            <h5>Chat Rooms</h5>
+            <a href="#" id="create-room" data-toggle="modal" data-target="#create-room-modal">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+        <ul class="rooms list-unstyled" id="room-list" data-bind="foreach: chatRooms">
+            <li><a href="#" data-bind="text: $data.name, attr: { 'data-roomId': $data.id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == $data.name()}"></a></li>
+        </ul>
+        <div class="profile">
+            <div>
+                <img src="/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + myAvatar() }" />
+                <a asp-area="Identity" asp-page="/Account/Manage/Index" data-bind="text: myName"></a>
+            </div>
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
+                <button type="submit" class="btn-sign-out"><i class="fas fa-sign-out-alt"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="main-content" data-bind="visible: joinedRoom().length == 0">
+        <span class="m-auto">
+            Please select room to join!
+        </span>
+    </div>
+    <div class="main-content" data-bind="visible: joinedRoom().length > 0">
+        <div class="header">
+            <h5 id="joinedRoom" data-bind="text: joinedRoom()">Lobby</h5>
+            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#remove-room-modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-body">
+            <ul class="list-unstyled" data-bind="foreach: chatMessages">
+                <li>
+                    <div class="chat-message d-flex" data-bind="css: $data.isMine() === true ? 'ismine' : 'isother'">
+                        <div class="left-side">
+                            <img src="/images/icons/avatar1.png" class="message-avatar" data-bind="attr: { src: '/images/icons/' + $data.avatar() }" />
+                        </div>
+                        <div class="message-content d-flex flex-column">
+                            <div class="d-flex justify-content-between">
+                                <span class="author" data-bind="text:$data.from"></span>
+                                <span class="timestamp">
+                                    <i class="far fa-clock"></i>
+                                    <span data-bind="text:$data.timestamp"></span>
+                                </span>
+                            </div>
+                            <span class="content" data-bind="html:$data.content"></span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="chat-input">
+            <input id="chat-message" type="text" value="" data-bind="value:message, valueUpdate: 'afterkeydown', event: { keypress: onEnter }" placeholder="What's on your mind?" />
+            <div class="actions d-flex align-items-center">
+                <form method="post" asp-action="Upload" asp-controller="Upload" enctype="multipart/form-data" id="uploadForm">
+                    <label for="UploadedFile" class="custom-file-upload">
+                        <i class="far fa-image"></i>
+                    </label>
+                    <input type="hidden" name="RoomId" data-bind="value: joinedRoomId()" />
+                    <input type="file" id="UploadedFile" name="File" accept=".jpg,.jpeg,.png" data-bind="event: {change: uploadFiles}">
+                </form>
+                <a id="emojibtn" href="#">
+                    <i class="far fa-smile"></i>
+                </a>
+                <i class="fas fa-paper-plane" id="btn-send-message" data-bind="click: sendNewMessage"></i>
+            </div>
+            <div class="emoticon-container d-none" id="emojis-container">
+                <a href="#">
+                    <input type="hidden" value=":)" />
+                    <img src="~/images/emojis/emoji1.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":P" />
+                    <img src="~/images/emojis/emoji2.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":O" />
+                    <img src="~/images/emojis/emoji3.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":-)" />
+                    <img src="~/images/emojis/emoji4.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value="B|" />
+                    <img src="~/images/emojis/emoji5.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value=":D" />
+                    <img src="~/images/emojis/emoji6.png" />
+                </a>
+                <a href="#">
+                    <input type="hidden" value="<3" />
+                    <img src="~/images/emojis/emoji7.png" />
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="users-container">
+        <div class="header">
+            <h5>Who's Here (<span data-bind="text: filteredChatUsers().length">0</span>)</h5>
+        </div>
+        <ul id="users-list" class="list-unstyled" data-bind="foreach: filteredChatUsers">
+            <li>
+                <div class="user">
+                    <img src="~/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + $data.avatar() }" />
+                    <div class="right-side">
+                        <input type="hidden" class="username" data-bind="value: $data.userName" />
+                        <span class="author" data-bind="text: $data.displayName"></span>
+                        <small data-bind="text: $data.device"></small>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <input type="text" class="" placeholder="Search someone..." data-bind="value: filter, valueUpdate: 'afterkeydown'" />
+    </div>
+</div>
+
+<div class="modal" id="create-room-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Room</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="roomName" placeholder="Room name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click: createRoom">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="remove-room-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Room</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this Chat Room?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" data-bind="click: deleteRoom">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/knockout/knockout-latest.min.js"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,64 @@
+﻿.users-container {
+    display: flex;
+    flex-direction: column;
+
+    .header {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+
+        h5 {
+            margin: 0;
+            font-weight: 400;
+            text-transform: uppercase;
+            color: #555;
+            font-size: 16px;
+        }
+    }
+
+    #users-list {
+        .user {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+
+            img {
+                width: 32px;
+                height: 32px;
+                margin-right: 5px;
+            }
+
+            .right-side {
+                width: 100%;
+                line-height: 16px;
+                overflow: hidden;
+
+                span {
+                    display: block;
+                    font-size: 14px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+
+            &:hover {
+                background: #f2f2f2;
+                cursor: pointer;
+            }
+        }
+    }
+
+    input {
+        width: 100%;
+        border: none;
+        height: 50px;
+        border-radius: 0;
+        border-top: 1px solid #eee;
+        background: #f2f2f2;
+        margin-top: auto;
+        text-indent: 10px;
+    }
+}

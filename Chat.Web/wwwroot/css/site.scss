@@ -1,0 +1,79 @@
+﻿@import "_sidebar.scss";
+@import "_content.scss";
+@import "_userslist.scss";
+
+body {
+    background: #eee;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+    justify-content: space-between;
+    background: white;
+    border: 1px solid #ccc;
+
+    .sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        flex-grow: 1;
+    }
+
+    .users-container {
+        width: 250px;
+    }
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"] + img {
+    border-radius: 50%;
+    border: 2px solid transparent;
+    padding: 1px;
+    cursor: pointer;
+}
+
+input[type="radio"]:checked + img {
+    border-radius: 50%;
+    border: 2px solid #5dca38;
+    padding: 1px;
+}
+
+.login-container,
+.register-container {
+    width: 350px;
+    background: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: white;
+    margin: auto;
+
+    h4 {
+        font-weight: 400;
+    }
+}
+
+.register-container {
+    width: 450px;
+}
+
+.btn-sign-in,
+.btn-sign-up {
+    width: 100%;
+    background: #5d8a9e;
+    color: white;
+    font-weight: 500;
+}
+
+.login-container .profile-avatar {
+    width: 96px;
+    height: 96px;
+    display: block;
+    border-radius: 50%;
+    margin: 20px auto;
+}

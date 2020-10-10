@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace Chat.Web.Helpers
 {
-    /// <summary>
-    /// Parse message for emoji macros
-    /// </summary>
     public class BasicEmojis
     {
         public static string ParseEmojis(string content)
@@ -27,7 +22,7 @@ namespace Chat.Web.Helpers
 
         private static string Img(string imageName)
         {
-            return ("<img class=\"emoji\" src=\"/Content/emojis/" + imageName + "\">");
+            return ("<img class=\"emoji\" src=\"/images/emojis/" + imageName + "\">");
         }
     }
 }
