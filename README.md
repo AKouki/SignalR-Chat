@@ -1,10 +1,8 @@
 # SignalR-Chat
-A real-time chat application using ASP.NET SignalR and KnockoutJS. Available for Web, Desktop and Mobile (Android)
+A real-time chat application using ASP.NET Core 3.1 SignalR and KnockoutJS. Available for Web and Desktop
 
-Find mobile version here: [Chat.Mobile](https://github.com/AKouki/SignalR-Chat.Mobile)
-
-![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/Content/screenshots/mockup1.png)
-![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/Content/screenshots/mockup2.png)
+![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/wwwroot/images/screenshots/mockup1.png)
+![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/wwwroot/images/screenshots/desktop.png)
 
 ## Features
 * Group chat
@@ -14,7 +12,7 @@ Find mobile version here: [Chat.Mobile](https://github.com/AKouki/SignalR-Chat.M
 * Chat Rooms
 
 ## Getting Started
-In order to run Desktop or Mobile application you need first to run Chat.Web project which is the Chat Service.
+In order to run Desktop application you need first to run Chat.Web project which is the Chat Service
 
 1. Grab the Project
 2. Open Visual Studio as Administrator and load the Solution
@@ -26,5 +24,4 @@ In order to run Desktop or Mobile application you need first to run Chat.Web pro
 2. That's all... Run the Project!
 
 ### For Chat.Desktop
-1. Open `ChatHubManager.cs`, `LoginWindow.xaml.cs` and change the address from `localhost:2325` to address where `Chat.Web` is running
-2. You are ready! run the desktop application: `Right-Click -> Debug -> Start new instance`
+1. Run the desktop application: `Right-Click -> Debug -> Start new instance`
