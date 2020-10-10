@@ -1,13 +1,10 @@
 ﻿using Chat.Desktop.Helpers;
-using Chat.Desktop.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,14 +15,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Chat.Desktop
+namespace Chat.Desktop.Views
 {
     /// <summary>
     /// Interaction logic for LoginWindow.xaml
     /// </summary>
     public partial class LoginWindow : Window
     {
-        public string loginUrl = "http://localhost:2325/Account/Login";
+        private readonly string loginUrl = "https://localhost:44354/Identity/Account/Login";
+        private readonly string registerUrl = "https://localhost:44354/Identity/Account/Register";
 
         public LoginWindow()
         {
@@ -37,20 +35,24 @@ namespace Chat.Desktop
             await ConnectAsync();
         }
 
-        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        private void btnSignup_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://localhost:2325/Account/Register");
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {registerUrl}")
+            {
+                CreateNoWindow = true
+            });
         }
 
         private async Task ConnectAsync()
         {
-            HttpClientHandler handler = new HttpClientHandler();
-            handler.CookieContainer = new CookieContainer();
-
-            using (var httpClient = new HttpClient(handler))
+            HttpClientHandler handler = new HttpClientHandler
             {
-                // Navigate to Login
-                var response = await httpClient.GetAsync(loginUrl);
+                CookieContainer = new CookieContainer()
+            };
+
+            using (var client = new HttpClient(handler))
+            {
+                var response = await client.GetAsync(loginUrl);
                 var content = await response.Content.ReadAsStringAsync();
                 var token = GetToken(content);
 
@@ -60,30 +62,31 @@ namespace Chat.Desktop
                 content = token + str;
 
                 // Post login data
-                response = await httpClient.PostAsync(loginUrl, new StringContent(content, Encoding.UTF8, "application/x-www-form-urlencoded"));
+                response = await client.PostAsync(loginUrl, new StringContent(content, Encoding.UTF8, "application/x-www-form-urlencoded"));
                 content = await response.Content.ReadAsStringAsync();
                 token = GetToken(content);
 
                 bool isAuthed = false;
                 foreach (Cookie cookie in handler.CookieContainer.GetCookies(new Uri(loginUrl)))
                 {
-                    if (!isAuthed && cookie.Name.Equals(".AspNet.ApplicationCookie"))
+                    if (!isAuthed && cookie.Name.Equals(".AspNetCore.Identity.Application"))
                         isAuthed = true;
                 }
 
                 if (isAuthed)
                 {
                     User.AuthCookie = handler.CookieContainer;
-                    MainWindow mw = new MainWindow();
-                    mw.Show();
-                    this.Close();
+                    MainWindow mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    Close();
                 }
                 else
                 {
-                    new InfoDialog("We couldn't authenticate you\nPlease enter valid info!");
+                    MessageBox.Show("We couldn't authenticate you\nPlease enter valid info!");
                 }
             }
 
+            await Task.CompletedTask;
         }
 
         private string GetToken(string content)
@@ -100,6 +103,5 @@ namespace Chat.Desktop
 
             return content;
         }
-
     }
 }

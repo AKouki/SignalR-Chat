@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,27 +17,20 @@ namespace Chat.Desktop.Views
     /// </summary>
     public partial class CreateChatRoom : Window
     {
+        public string RoomName => txtNewRoomName.Text.Trim();
         public CreateChatRoom()
         {
             InitializeComponent();
         }
 
-        private void btnCreateRoom_Click(object sender, RoutedEventArgs e)
-        {
-            this.DialogResult = true;
-        }
-
-        public string RoomName
-        {
-            get
-            {
-                return txtNewRoomName.Text;
-            }
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             txtNewRoomName.Focus();
+        }
+
+        private void btnCreateRoom_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
         }
     }
 }

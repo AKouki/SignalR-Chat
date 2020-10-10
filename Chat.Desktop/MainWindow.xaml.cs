@@ -1,14 +1,11 @@
 ﻿using Chat.Desktop.Helpers;
-using Chat.Desktop.Models;
+using Chat.Desktop.ViewModels;
 using Chat.Desktop.Views;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,7 +17,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace Chat.Desktop
 {
@@ -33,180 +29,232 @@ namespace Chat.Desktop
         public ObservableCollection<MessageViewModel> Messages { get; set; }
         public ObservableCollection<UserViewModel> Users { get; set; }
 
-        ChatHubManager hub;
+        HubConnection connection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:44354/chatHub", options =>
+            {
+                options.Cookies = User.AuthCookie;
+            }).Build();
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            Rooms = new ObservableCollection<RoomViewModel>();
+            Messages = new ObservableCollection<MessageViewModel>();
+            Users = new ObservableCollection<UserViewModel>();
+
+            ListBoxRooms.ItemsSource = Rooms;
+            ListViewMessages.ItemsSource = Messages;
+            ListViewUsers.ItemsSource = Users;
+
+            RegisterEvents();
+            await Connect();
+            await GetRooms();
+            await GetUsers(User.CurrentRoom);
+            await GetMessages(User.CurrentRoom);
+
+            ListBoxRooms.SelectedIndex = 0;
+        }
+
+        public async Task Connect()
+        {
+            await connection.StartAsync();
+            await connection.SendAsync("Join", "Lobby");
+            User.CurrentRoom = "Lobby";
+        }
+
+        private void RegisterEvents()
+        {
+            connection.On<MessageViewModel>("newMessage", (message) =>
             {
-                hub = new ChatHubManager(User.AuthCookie);
-                await hub.Start();
+                Messages.Add(message);
+                ListViewMessages.Items.MoveCurrentToLast();
+                ListViewMessages.ScrollIntoView(ListViewMessages.Items.CurrentItem);
+            });
 
-                Rooms = new ObservableCollection<RoomViewModel>();
-                Messages = new ObservableCollection<MessageViewModel>();
-                Users = new ObservableCollection<UserViewModel>();
+            connection.On<string, string>("getProfileInfo", (displayName, avatar) =>
+            {
+                txtUsername.Text = displayName;
+                Uri uri = new Uri(@"/Images/Avatars/" + avatar, UriKind.Relative);
+                imgAvatar.Source = new BitmapImage(uri);
+            });
 
-                Rooms = await hub.GetRooms();
+            connection.On<UserViewModel>("addUser", (user) =>
+            {
+                Users.Add(user);
+                txtOnlineCounter.Text = $"WHO'S HERE ({Users.Count})";
+            });
 
-                // Bind users to ListBox
-                ListBoxRooms.ItemsSource = Rooms;
+            connection.On<UserViewModel>("removeUser", (user) =>
+            {
+                var userToRemove = Users.Where(u => u.Username == user.Username).FirstOrDefault();
+                Users.Remove(userToRemove);
+                txtOnlineCounter.Text = $"WHO'S HERE ({Users.Count})";
+            });
 
-                Closing += (_, __) => hub.Stop();
+            connection.On<RoomViewModel>("addChatRoom", (room) =>
+            {
+                Rooms.Add(room);
+            });
+
+            connection.On<RoomViewModel>("removeChatRoom", (room) =>
+            {
+                var roomToRemove = Rooms.Where(r => r.Id == room.Id).FirstOrDefault();
+                Rooms.Remove(roomToRemove);
+            });
+
+            connection.On<string>("onError", (error) =>
+            {
+                MessageBox.Show(error);
+            });
+
+            connection.On<string>("onRoomDeleted", (message) =>
+            {
+                ListBoxRooms.SelectedIndex = 0;
+                txtOnlineCounter.Text = $"WHO'S HERE ({Users.Count})";
+            });
+        }
+
+        public async Task SendPrivate(string userName, string message)
+        {
+            await connection.SendAsync("SendpRIVATE", userName, message);
+        }
+        public async Task SendToRoom(string roomName, string message)
+        {
+            await connection.SendAsync("SendToRoom", roomName, message);
+        }
+
+        private async Task SendMessage()
+        {
+            var text = txtMessage.Text;
+            if (text.StartsWith("/"))
+            {
+                int startIndex = text.IndexOf('(') + 1;
+                int length = text.IndexOf(')') - startIndex;
+                var receiver = text.Substring(startIndex, length);
+                var message = text.Substring(text.IndexOf(')') + 1);
+
+                if (!string.IsNullOrEmpty(receiver) && !string.IsNullOrEmpty(message))
+                {
+                    await connection.SendAsync("SendPrivate", receiver, message);
+                    txtMessage.Text = "";
+                }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error loading Main Window: " + ex.Message);
+                if (!string.IsNullOrEmpty(text))
+                {
+                    await connection.SendAsync("SendToRoom", User.CurrentRoom, text.Trim());
+                    txtMessage.Text = "";
+                }
             }
         }
+
+        public async Task GetRooms()
+        {
+            Rooms = await connection.InvokeAsync<ObservableCollection<RoomViewModel>>("GetRooms");
+            ListBoxRooms.ItemsSource = Rooms;
+        }
+
+        public async Task GetUsers(string roomName)
+        {
+            Users = await connection.InvokeAsync<ObservableCollection<UserViewModel>>("GetUsers", roomName);
+            ListViewUsers.ItemsSource = Users;
+        }
+
+        public async Task GetMessages(string roomName)
+        {
+            Messages = await connection.InvokeAsync<ObservableCollection<MessageViewModel>>("GetMessageHistory", roomName);
+            ListViewMessages.ItemsSource = Messages;
+        }
+
+        private async void ListBoxRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedRoom = ListBoxRooms.SelectedItem as RoomViewModel;
+            if (selectedRoom != null)
+            {
+                await connection.SendAsync("Join", selectedRoom.Name);
+                User.CurrentRoom = selectedRoom.Name;
+                txtRoomName.Text = selectedRoom.Name;
+
+                await GetUsers(selectedRoom.Name);
+                await GetMessages(selectedRoom.Name);
+
+                ListViewMessages.Items.MoveCurrentToLast();
+                ListViewMessages.ScrollIntoView(ListViewMessages.Items.CurrentItem);
+
+                txtOnlineCounter.Text = $"WHO'S HERE ({Users.Count})";
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListViewUsers.ItemsSource);
+                view.Filter = Filter;
+            }
+
+        }
+
+        private void ListViewUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedUser = ListViewUsers.SelectedItem as UserViewModel;
+            if (selectedUser != null)
+            {
+                var text = txtMessage.Text;
+                if (txtMessage.Text.StartsWith("/private"))
+                    text = txtMessage.Text.Split(")")[1].Trim();
+
+                txtMessage.Text = $"/private({selectedUser.Username}) {text}";
+                txtMessage.Focus();
+                ListViewUsers.SelectedIndex = -1;
+            }
+        }
+
+        private void txtSearchUser_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(ListViewUsers.ItemsSource).Refresh();
+        }
+
         private bool Filter(object item)
         {
-            if (String.IsNullOrEmpty(txtSearchUser.Text))
+            if (string.IsNullOrEmpty(txtSearchUser.Text))
                 return true;
 
-            UserViewModel user = (UserViewModel)item;
-            return user.DisplayName.IndexOf(txtSearchUser.Text, StringComparison.OrdinalIgnoreCase) >= 0;
+            var user = (UserViewModel)item;
+            return user.FullName.IndexOf(txtSearchUser.Text, StringComparison.OrdinalIgnoreCase) >= 0;
+
         }
 
         private async void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            await hub.Send(User.CurrentRoom, txtMessage.Text);
+            await SendMessage();
         }
 
-        public void AddChatRoom(RoomViewModel room)
+        private async void btnCreateChatRoom_Click(object sender, RoutedEventArgs e)
         {
-            Rooms.Add(room);
-        }
-
-        public async void RemoveChatRoom(RoomViewModel room)
-        {
-            RoomViewModel roomToDelete = Rooms.Where(r => r.Name == room.Name).First();
-            Rooms.Remove(roomToDelete);
-
-            await hub.Join(Rooms[0].Name);
-        }
-
-        public void AddMessage(MessageViewModel message)
-        {
-            Messages.Add(message);
-
-            ListViewMessages.Items.MoveCurrentToLast();
-            ListViewMessages.ScrollIntoView(ListViewMessages.Items.CurrentItem);
-        }
-
-        public void AddUser(UserViewModel user)
-        {
-            Users.Add(user);
-
-            txtOnlineCounter.Text = string.Format("WHO'S HERE ({0})", Users.Count);
-        }
-
-        public void RemoveUser(UserViewModel user)
-        {
-            UserViewModel userToDelete = Users.Where(u => u.DisplayName == user.DisplayName).First();
-            Users.Remove(userToDelete);
-
-            txtOnlineCounter.Text = string.Format("WHO'S HERE ({0})", Users.Count);
-        }
-
-        public void JoinLobby()
-        {
-            // 'Join' code is on SelectionChanged Event.
-            ListBoxRooms.SelectedIndex = 0;
-        }
-
-        public void UpdateProfileInfo(string displayName, string avatar)
-        {
-            imgMyAvatar.Source = Utils.Base64ToBitmap(avatar);
-            txtUsername.Text = displayName;
-
-            ListBoxRooms.SelectedIndex = 0;
-        }
-
-        private void btnLogout_Click(object sender, RoutedEventArgs e)
-        {
-            User.AuthCookie = null;
-
-            new LoginWindow().Show();
-            this.Close();
-        }
-
-        private async void btnCreateRoom_Click(object sender, RoutedEventArgs e)
-        {
-            CreateChatRoom createRoomWnd = new CreateChatRoom();
+            var createRoomWnd = new CreateChatRoom();
             if (createRoomWnd.ShowDialog() == true)
             {
-                await hub.CreateRoom(createRoomWnd.RoomName);
+                await connection.SendAsync("CreateRoom", createRoomWnd.RoomName);
             }
-        }
-
-        private async void btnDeleteRoom_Click(object sender, RoutedEventArgs e)
-        {
-            await hub.DeleteRoom(User.CurrentRoom);
         }
 
         private async void txtMessage_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                await hub.Send(User.CurrentRoom, txtMessage.Text);
-                txtMessage.Text = "";
+                await SendMessage();
             }
         }
 
-        private void txtSearchUser_TextChanged(object sender, TextChangedEventArgs e)
+        private async void btnDeleteRoom_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                CollectionViewSource.GetDefaultView(ListViewUsers.ItemsSource).Refresh();
-            }
-            catch (Exception) { }
+            await connection.SendAsync("DeleteRoom", User.CurrentRoom);
         }
 
-        private async void ListBoxRooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnSignout_Click(object sender, RoutedEventArgs e)
         {
-            RoomViewModel selectedRoom = ListBoxRooms.SelectedItem as RoomViewModel;
-            if (selectedRoom != null)
-            {
-                await hub.Join(selectedRoom.Name);
-                User.CurrentRoom = selectedRoom.Name;
-                txtRoomName.Text = User.CurrentRoom;
-
-                // Get users and messages
-                Users = await hub.GetUsers(selectedRoom.Name);
-                Messages = await hub.GetMessageHistory(selectedRoom.Name);
-
-                // Bind them to ListViews
-                ListViewMessages.ItemsSource = Messages;
-                ListViewUsers.ItemsSource = Users;
-
-                // Auto-scroll to bottom
-                ListViewMessages.Items.MoveCurrentToLast();
-                ListViewMessages.ScrollIntoView(ListViewMessages.Items.CurrentItem);
-
-                txtOnlineCounter.Text = string.Format("WHO'S HERE ({0})", Users.Count);
-
-                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(ListViewUsers.ItemsSource);
-                view.Filter = Filter;
-            }
+            User.AuthCookie = null;
+            new LoginWindow().Show();
+            Close();
         }
-
-        private void ListViewUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UserViewModel selectedUser = ListViewUsers.SelectedItem as UserViewModel;
-            if (selectedUser != null)
-            {
-                txtMessage.Text = string.Format("/private({0})", selectedUser.Username) + " " + txtMessage.Text;
-                txtMessage.Focus();
-            }
-        }
-
-        #region Instance
-        public static MainWindow Instance;
-        public MainWindow()
-        {
-            InitializeComponent();
-            Instance = this;
-        }
-        #endregion
     }
 }
