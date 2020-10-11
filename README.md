@@ -1,5 +1,5 @@
 # SignalR-Chat
-A real-time chat application using ASP.NET Core 3.1 SignalR and KnockoutJS. Available for Web and Desktop
+A real-time chat application using ASP.NET Core 3.1 SignalR and Knockout.js. Available for Web and Desktop
 
 ![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/wwwroot/images/screenshots/mockup1.png)
 ![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/master/Chat.Web/wwwroot/images/screenshots/desktop.png)
