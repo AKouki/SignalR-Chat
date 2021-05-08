@@ -9,6 +9,7 @@ using Chat.Web.Data;
 using Chat.Web.Hubs;
 using Chat.Web.Models;
 using Chat.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Chat.Web.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UploadController : ControllerBase

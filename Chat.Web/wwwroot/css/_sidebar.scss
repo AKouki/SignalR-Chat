@@ -33,6 +33,10 @@
         }
     }
 
+    ul {
+        overflow-y: auto;
+    }
+
     ul li a {
         display: block;
         padding: 2px 10px;

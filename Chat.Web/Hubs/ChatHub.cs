@@ -4,7 +4,6 @@ using Chat.Web.Models;
 using Chat.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +16,6 @@ namespace Chat.Web.Hubs
     public class ChatHub : Hub
     {
         public readonly static List<UserViewModel> _Connections = new List<UserViewModel>();
-        public readonly static List<RoomViewModel> _Rooms = new List<RoomViewModel>();
         private readonly static Dictionary<string, string> _ConnectionsMap = new Dictionary<string, string>();
 
         private readonly ApplicationDbContext _context;
@@ -44,7 +42,7 @@ namespace Chat.Web.Hubs
                         Content = Regex.Replace(message, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty),
                         From = sender.FullName,
                         Avatar = sender.Avatar,
-                        To = "",
+                        Room = "",
                         Timestamp = DateTime.Now.ToLongTimeString()
                     };
 
@@ -52,37 +50,6 @@ namespace Chat.Web.Hubs
                     await Clients.Client(userId).SendAsync("newMessage", messageViewModel);
                     await Clients.Caller.SendAsync("newMessage", messageViewModel);
                 }
-            }
-        }
-
-        public async Task SendToRoom(string roomName, string message)
-        {
-            try
-            {
-                var user = _context.Users.Where(u => u.UserName == IdentityName).FirstOrDefault();
-                var room = _context.Rooms.Where(r => r.Name == roomName).FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(message.Trim()))
-                {
-                    // Create and save message in database
-                    var msg = new Message()
-                    {
-                        Content = Regex.Replace(message, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty),
-                        FromUser = user,
-                        ToRoom = room,
-                        Timestamp = DateTime.Now
-                    };
-                    _context.Messages.Add(msg);
-                    _context.SaveChanges();
-
-                    // Broadcast the message
-                    var messageViewModel = _mapper.Map<Message, MessageViewModel>(msg);
-                    await Clients.Group(roomName).SendAsync("newMessage", messageViewModel);
-                }
-            }
-            catch (Exception)
-            {
-                await Clients.Caller.SendAsync("onError", "Message not send! Message should be 1-500 characters.");
             }
         }
 
@@ -117,110 +84,9 @@ namespace Chat.Web.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
         }
 
-        public async Task CreateRoom(string roomName)
-        {
-            try
-            {
-
-                // Accept: Letters, numbers and one space between words.
-                Match match = Regex.Match(roomName, @"^\w+( \w+)*$");
-                if (!match.Success)
-                {
-                    await Clients.Caller.SendAsync("onError", "Invalid room name!\nRoom name must contain only letters and numbers.");
-                }
-                else if (roomName.Length < 5 || roomName.Length > 100)
-                {
-                    await Clients.Caller.SendAsync("onError", "Room name must be between 5-100 characters!");
-                }
-                else if (_context.Rooms.Any(r => r.Name == roomName))
-                {
-                    await Clients.Caller.SendAsync("onError", "Another chat room with this name exists");
-                }
-                else
-                {
-                    // Create and save chat room in database
-                    var user = _context.Users.Where(u => u.UserName == IdentityName).FirstOrDefault();
-                    var room = new Room()
-                    {
-                        Name = roomName,
-                        Admin = user
-                    };
-                    _context.Rooms.Add(room);
-                    _context.SaveChanges();
-
-                    if (room != null)
-                    {
-                        // Update room list
-                        var roomViewModel = _mapper.Map<Room, RoomViewModel>(room);
-                        _Rooms.Add(roomViewModel);
-                        await Clients.All.SendAsync("addChatRoom", roomViewModel);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await Clients.Caller.SendAsync("onError", "Couldn't create chat room: " + ex.Message);
-            }
-        }
-
-        public async Task DeleteRoom(string roomName)
-        {
-            try
-            {
-                // Delete from database
-                var room = _context.Rooms.Include(r => r.Admin)
-                    .Where(r => r.Name == roomName && r.Admin.UserName == IdentityName).FirstOrDefault();
-                _context.Rooms.Remove(room);
-                _context.SaveChanges();
-
-                // Delete from list
-                var roomViewModel = _Rooms.First(r => r.Name == roomName);
-                _Rooms.Remove(roomViewModel);
-
-                // Move users back to Lobby
-                await Clients.Group(roomName).SendAsync("onRoomDeleted", string.Format("Room {0} has been deleted.\nYou are now moved to the Lobby!", roomName));
-
-                // Tell all users to update their room list
-                await Clients.All.SendAsync("removeChatRoom", roomViewModel);
-            }
-            catch (Exception)
-            {
-                await Clients.Caller.SendAsync("onError", "Can't delete this chat room. Only owner can delete this room.");
-            }
-        }
-
-        public IEnumerable<RoomViewModel> GetRooms()
-        {
-            // First run?
-            if (_Rooms.Count == 0)
-            {
-                foreach (var room in _context.Rooms)
-                {
-                    var roomViewModel = _mapper.Map<Room, RoomViewModel>(room);
-                    _Rooms.Add(roomViewModel);
-                }
-            }
-
-            return _Rooms.ToList();
-        }
-
         public IEnumerable<UserViewModel> GetUsers(string roomName)
         {
             return _Connections.Where(u => u.CurrentRoom == roomName).ToList();
-        }
-
-        public IEnumerable<MessageViewModel> GetMessageHistory(string roomName)
-        {
-            var messageHistory = _context.Messages.Where(m => m.ToRoom.Name == roomName)
-                    .Include(m => m.FromUser)
-                    .Include(m => m.ToRoom)
-                    .OrderByDescending(m => m.Timestamp)
-                    .Take(20)
-                    .AsEnumerable()
-                    .Reverse()
-                    .ToList();
-
-            return _mapper.Map<IEnumerable<Message>, IEnumerable<MessageViewModel>>(messageHistory);
         }
 
         public override Task OnConnectedAsync()

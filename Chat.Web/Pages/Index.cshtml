@@ -11,7 +11,13 @@
     </button>
 </div>
 
-<div class="app">
+<div class="d-flex flex-column justify-content-center align-items-center vh-100" data-bind="css: isLoading() ? 'd-flex' : 'd-none'">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<div class="app d-none" data-bind="css: isLoading() ? 'd-none' : ''">
     <div class="sidebar">
         <div class="header">
             <h5>Chat Rooms</h5>

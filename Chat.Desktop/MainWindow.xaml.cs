@@ -3,20 +3,17 @@ using Chat.Desktop.ViewModels;
 using Chat.Desktop.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Chat.Desktop
 {
@@ -29,15 +26,25 @@ namespace Chat.Desktop
         public ObservableCollection<MessageViewModel> Messages { get; set; }
         public ObservableCollection<UserViewModel> Users { get; set; }
 
+        private const string BaseUri = "https://localhost:44354";
+
+        private readonly HttpClient httpClient;
+
         HubConnection connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:44354/chatHub", options =>
-            {
-                options.Cookies = User.AuthCookie;
-            }).Build();
+            .WithUrl($"{BaseUri}/chatHub", options => { options.Cookies = User.AuthCookie; })
+            .Build();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                CookieContainer = User.AuthCookie
+            };
+
+            httpClient = new HttpClient(handler);
+            httpClient.BaseAddress = new Uri(BaseUri);
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -51,19 +58,11 @@ namespace Chat.Desktop
             ListViewUsers.ItemsSource = Users;
 
             RegisterEvents();
-            await Connect();
+            await connection.StartAsync();
+
             await GetRooms();
-            await GetUsers(User.CurrentRoom);
-            await GetMessages(User.CurrentRoom);
 
             ListBoxRooms.SelectedIndex = 0;
-        }
-
-        public async Task Connect()
-        {
-            await connection.StartAsync();
-            await connection.SendAsync("Join", "Lobby");
-            User.CurrentRoom = "Lobby";
         }
 
         private void RegisterEvents()
@@ -100,9 +99,9 @@ namespace Chat.Desktop
                 Rooms.Add(room);
             });
 
-            connection.On<RoomViewModel>("removeChatRoom", (room) =>
+            connection.On<int>("removeChatRoom", (roomId) =>
             {
-                var roomToRemove = Rooms.Where(r => r.Id == room.Id).FirstOrDefault();
+                var roomToRemove = Rooms.Where(r => r.Id == roomId).FirstOrDefault();
                 Rooms.Remove(roomToRemove);
             });
 
@@ -111,20 +110,11 @@ namespace Chat.Desktop
                 MessageBox.Show(error);
             });
 
-            connection.On<string>("onRoomDeleted", (message) =>
+            connection.On<string>("onRoomDeleted", (roomName) =>
             {
                 ListBoxRooms.SelectedIndex = 0;
                 txtOnlineCounter.Text = $"WHO'S HERE ({Users.Count})";
             });
-        }
-
-        public async Task SendPrivate(string userName, string message)
-        {
-            await connection.SendAsync("SendpRIVATE", userName, message);
-        }
-        public async Task SendToRoom(string roomName, string message)
-        {
-            await connection.SendAsync("SendToRoom", roomName, message);
         }
 
         private async Task SendMessage()
@@ -138,24 +128,28 @@ namespace Chat.Desktop
                 var message = text.Substring(text.IndexOf(')') + 1);
 
                 if (!string.IsNullOrEmpty(receiver) && !string.IsNullOrEmpty(message))
-                {
                     await connection.SendAsync("SendPrivate", receiver, message);
-                    txtMessage.Text = "";
-                }
             }
             else
             {
                 if (!string.IsNullOrEmpty(text))
                 {
-                    await connection.SendAsync("SendToRoom", User.CurrentRoom, text.Trim());
-                    txtMessage.Text = "";
+                    var json = JsonSerializer.Serialize(new MessageViewModel() { Room = User.CurrentRoom.Name, Content = text.Trim() });
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    await httpClient.PostAsync("/api/Messages", data);
                 }
             }
+
+            txtMessage.Text = "";
         }
 
         public async Task GetRooms()
         {
-            Rooms = await connection.InvokeAsync<ObservableCollection<RoomViewModel>>("GetRooms");
+            var response = await httpClient.GetAsync("/api/Rooms");
+            var content = await response.Content.ReadAsStringAsync();
+
+            Rooms = JsonSerializer.Deserialize<ObservableCollection<RoomViewModel>>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
             ListBoxRooms.ItemsSource = Rooms;
         }
 
@@ -167,7 +161,11 @@ namespace Chat.Desktop
 
         public async Task GetMessages(string roomName)
         {
-            Messages = await connection.InvokeAsync<ObservableCollection<MessageViewModel>>("GetMessageHistory", roomName);
+            var response = await httpClient.GetAsync("/api/Messages/Room/" + roomName);
+            var content = await response.Content.ReadAsStringAsync();
+
+            Messages = JsonSerializer.Deserialize<ObservableCollection<MessageViewModel>>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
             ListViewMessages.ItemsSource = Messages;
         }
 
@@ -177,7 +175,7 @@ namespace Chat.Desktop
             if (selectedRoom != null)
             {
                 await connection.SendAsync("Join", selectedRoom.Name);
-                User.CurrentRoom = selectedRoom.Name;
+                User.CurrentRoom = selectedRoom;
                 txtRoomName.Text = selectedRoom.Name;
 
                 await GetUsers(selectedRoom.Name);
@@ -219,8 +217,8 @@ namespace Chat.Desktop
                 return true;
 
             var user = (UserViewModel)item;
-            return user.FullName.IndexOf(txtSearchUser.Text, StringComparison.OrdinalIgnoreCase) >= 0;
 
+            return user.FullName.IndexOf(txtSearchUser.Text, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private async void btnSend_Click(object sender, RoutedEventArgs e)
@@ -233,8 +231,15 @@ namespace Chat.Desktop
             var createRoomWnd = new CreateChatRoom();
             if (createRoomWnd.ShowDialog() == true)
             {
-                await connection.SendAsync("CreateRoom", createRoomWnd.RoomName);
+                var json = JsonSerializer.Serialize(new RoomViewModel() { Name = createRoomWnd.RoomName });
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                await httpClient.PostAsync("/api/Rooms", data);
             }
+        }
+
+        private async void btnDeleteRoom_Click(object sender, RoutedEventArgs e)
+        {
+            await httpClient.DeleteAsync("/api/Rooms/" + User.CurrentRoom.Id);
         }
 
         private async void txtMessage_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -245,13 +250,9 @@ namespace Chat.Desktop
             }
         }
 
-        private async void btnDeleteRoom_Click(object sender, RoutedEventArgs e)
+        private async void btnSignout_Click(object sender, RoutedEventArgs e)
         {
-            await connection.SendAsync("DeleteRoom", User.CurrentRoom);
-        }
-
-        private void btnSignout_Click(object sender, RoutedEventArgs e)
-        {
+            await connection.StopAsync();
             User.AuthCookie = null;
             new LoginWindow().Show();
             Close();
