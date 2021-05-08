@@ -110,7 +110,7 @@ namespace Chat.Desktop
                 MessageBox.Show(error);
             });
 
-            connection.On<string>("onRoomDeleted", (roomName) =>
+            connection.On<string>("onRoomDeleted", (message) =>
             {
                 ListBoxRooms.SelectedIndex = 0;
                 txtOnlineCounter.Text = $"WHO'S HERE ({Users.Count})";
