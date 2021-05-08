@@ -77,3 +77,10 @@ input[type="radio"]:checked + img {
     border-radius: 50%;
     margin: 20px auto;
 }
+
+.alert-dismissible {
+    position: fixed;
+    width: 500px;
+    right: 25px;
+    top: 25px;
+}
