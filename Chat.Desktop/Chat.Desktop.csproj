@@ -1,35 +1,35 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Images\Avatars\avatar1.png" />
-    <None Remove="Images\Avatars\avatar2.png" />
-    <None Remove="Images\Avatars\avatar3.png" />
-    <None Remove="Images\Avatars\avatar4.png" />
-    <None Remove="Images\avatar_circle.png" />
-    <None Remove="Images\remove.png" />
-    <None Remove="Images\send.png" />
-    <None Remove="Images\sign-out.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Images\Avatars\avatar1.png" />
+		<None Remove="Images\Avatars\avatar2.png" />
+		<None Remove="Images\Avatars\avatar3.png" />
+		<None Remove="Images\Avatars\avatar4.png" />
+		<None Remove="Images\avatar_circle.png" />
+		<None Remove="Images\remove.png" />
+		<None Remove="Images\send.png" />
+		<None Remove="Images\sign-out.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.8" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.6" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Images\Avatars\avatar1.png" />
-    <Resource Include="Images\Avatars\avatar2.png" />
-    <Resource Include="Images\Avatars\avatar3.png" />
-    <Resource Include="Images\Avatars\avatar4.png" />
-    <Resource Include="Images\avatar_circle.png" />
-    <Resource Include="Images\remove.png" />
-    <Resource Include="Images\send.png" />
-    <Resource Include="Images\sign-out.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Images\Avatars\avatar1.png" />
+		<Resource Include="Images\Avatars\avatar2.png" />
+		<Resource Include="Images\Avatars\avatar3.png" />
+		<Resource Include="Images\Avatars\avatar4.png" />
+		<Resource Include="Images\avatar_circle.png" />
+		<Resource Include="Images\remove.png" />
+		<Resource Include="Images\send.png" />
+		<Resource Include="Images\sign-out.png" />
+	</ItemGroup>
 
 </Project>
