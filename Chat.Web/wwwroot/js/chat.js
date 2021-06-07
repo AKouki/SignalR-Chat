@@ -34,6 +34,10 @@
         viewModel.roomAdded(new ChatRoom(room.id, room.name));
     });
 
+    connection.on("updateChatRoom", function (room) {
+        viewModel.roomUpdated(new ChatRoom(room.id, room.name));
+    });
+
     connection.on("removeChatRoom", function (id) {
         viewModel.roomDeleted(id);
     });
@@ -165,6 +169,16 @@
             });
         }
 
+        self.editRoom = function () {
+            var roomId = self.joinedRoomId();
+            var roomName = $("#newRoomName").val();
+            fetch('/api/Rooms/' + roomId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: roomId, name: roomName })
+            });
+        }
+
         self.deleteRoom = function () {
             fetch('/api/Rooms/' + self.joinedRoomId(), {
                 method: 'DELETE',
@@ -193,6 +207,15 @@
 
         self.roomAdded = function (room) {
             self.chatRooms.push(room);
+        }
+
+        self.roomUpdated = function (updatedRoom) {
+            ko.utils.arrayForEach(self.chatRooms(), function (item) {
+                if (updatedRoom.id() == item.id()) {
+                    item.name(updatedRoom.name());
+                    self.joinRoom(item);
+                }
+            });
         }
 
         self.roomDeleted = function (id) {

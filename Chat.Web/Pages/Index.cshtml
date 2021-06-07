@@ -46,9 +46,14 @@
     <div class="main-content" data-bind="visible: joinedRoom().length > 0">
         <div class="header">
             <h5 id="joinedRoom" data-bind="text: joinedRoom()">Lobby</h5>
-            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#remove-room-modal">
-                <i class="fas fa-times"></i>
-            </button>
+            <div class="room-actions">
+                <button type="button" class="btn btn-link text-secondary px-1" data-toggle="modal" data-target="#rename-room-modal">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-link text-secondary px-1" data-toggle="modal" data-target="#remove-room-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
         <div class="chat-body">
             <ul class="list-unstyled" data-bind="foreach: chatMessages">
@@ -153,6 +158,26 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click: createRoom">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="rename-room-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rename Room</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="newRoomName" data-bind="value: $root.joinedRoom()">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click: editRoom">Update</button>
             </div>
         </div>
     </div>

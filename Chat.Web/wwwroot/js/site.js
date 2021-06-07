@@ -31,7 +31,7 @@
     });
 
     $('.modal').on('hidden.bs.modal', function () {
-        $(".modal-body input").val("");
+        $(".modal-body input:not(#newRoomName)").val("");
     });
 
     $(".alert .close").on('click', function () {

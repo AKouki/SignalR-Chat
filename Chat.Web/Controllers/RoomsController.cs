@@ -76,10 +76,10 @@ namespace Chat.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, RoomViewModel roomViewModel)
+        public async Task<IActionResult> Edit(int id, RoomViewModel roomViewModel)
         {
-            if (id != roomViewModel.Id)
-                return BadRequest();
+            if (_context.Rooms.Any(r => r.Name == roomViewModel.Name))
+                return BadRequest("Invalid room name or room already exists");
 
             var room = _context.Rooms.FirstOrDefault(r => r.Id == id);
             if (room == null)
@@ -87,6 +87,8 @@ namespace Chat.Web.Controllers
 
             room.Name = roomViewModel.Name;
             await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.All.SendAsync("updateChatRoom", new { id = room.Id, room.Name});
 
             return NoContent();
         }
