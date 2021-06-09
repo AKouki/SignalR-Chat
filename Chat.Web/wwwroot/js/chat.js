@@ -210,12 +210,15 @@
         }
 
         self.roomUpdated = function (updatedRoom) {
-            ko.utils.arrayForEach(self.chatRooms(), function (item) {
-                if (updatedRoom.id() == item.id()) {
-                    item.name(updatedRoom.name());
-                    self.joinRoom(item);
-                }
+            var room = ko.utils.arrayFirst(self.chatRooms(), function (item) {
+                return updatedRoom.id() == item.id();
             });
+
+            room.name(updatedRoom.name());
+
+            if (self.joinedRoomId() == room.id()) {
+                self.joinRoom(room);
+            }
         }
 
         self.roomDeleted = function (id) {

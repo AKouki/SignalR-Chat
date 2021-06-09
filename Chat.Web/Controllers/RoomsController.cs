@@ -81,7 +81,11 @@ namespace Chat.Web.Controllers
             if (_context.Rooms.Any(r => r.Name == roomViewModel.Name))
                 return BadRequest("Invalid room name or room already exists");
 
-            var room = _context.Rooms.FirstOrDefault(r => r.Id == id);
+            var room = await _context.Rooms
+                .Include(r => r.Admin)
+                .Where(r => r.Id == id && r.Admin.UserName == User.Identity.Name)
+                .FirstOrDefaultAsync();
+
             if (room == null)
                 return NotFound();
 
