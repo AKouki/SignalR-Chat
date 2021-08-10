@@ -39,7 +39,7 @@ namespace Chat.Web.Hubs
                     // Build the message
                     var messageViewModel = new MessageViewModel()
                     {
-                        Content = Regex.Replace(message, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty),
+                        Content = Regex.Replace(message, @"<.*?>", string.Empty),
                         From = sender.FullName,
                         Avatar = sender.Avatar,
                         Room = "",

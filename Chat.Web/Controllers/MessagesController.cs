@@ -76,7 +76,7 @@ namespace Chat.Web.Controllers
 
             var msg = new Message()
             {
-                Content = Regex.Replace(messageViewModel.Content, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty),
+                Content = Regex.Replace(messageViewModel.Content, @"<.*?>", string.Empty),
                 FromUser = user,
                 ToRoom = room,
                 Timestamp = DateTime.Now
