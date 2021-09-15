@@ -1,3 +1,5 @@
+### [✨Please take some time to discuss about the front-end rework✨](https://github.com/AKouki/SignalR-Chat/issues/17)
+
 # SignalR-Chat
 A real-time chat application using .NET 5, SignalR and KnockoutJS. Available for Web and Desktop
 
