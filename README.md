@@ -17,10 +17,16 @@ In order to run Desktop application you need first to run Chat.Web project which
 1. Grab the Project
 2. Open Visual Studio as Administrator and load the Solution
 3. Resolve any missing/required nuget package
+4. Build the database container with the following command:
+    docker-compose up -d
 
 ### For Chat.Web
 1. Build Database. Open `Package Manager Console` and run the following commands: <br />
 `update-database` <br />
+
+or (VSCode terminal):
+    dotnet ef database update
+    
 2. That's all... Run the Project!
 
 ### For Chat.Desktop
