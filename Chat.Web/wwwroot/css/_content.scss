@@ -4,6 +4,15 @@
     flex-direction: column;
     overflow: hidden;
 
+    svg {
+        width: 20px;
+        height: 20px;
+
+        &:hover {
+            color: #555;
+        }
+    }
+
     .header {
         height: 50px;
         display: flex;
@@ -53,17 +62,13 @@
         .actions {
             padding: 0 10px;
 
-            i {
+            svg {
                 color: #aaa;
                 cursor: pointer;
 
                 &:hover {
                     color: #555;
                 }
-            }
-
-            label {
-                margin-bottom: 0;
             }
 
             #emojibtn {

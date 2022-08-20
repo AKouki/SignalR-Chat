@@ -1,19 +1,14 @@
 ﻿@page
 @model IndexModel
-@{
-    ViewData["Title"] = "Home page";
-}
 
 <div class="alert alert-warning alert-dismissible d-none" id="errorAlert" role="alert">
     <span data-bind="text:serverInfoMessage"></span>
-    <button type="button" class="close" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 <div class="d-flex flex-column justify-content-center align-items-center vh-100" data-bind="css: isLoading() ? 'd-flex' : 'd-none'">
     <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="visually-hidden">Loading...</span>
     </div>
 </div>
 
@@ -21,12 +16,14 @@
     <div class="sidebar">
         <div class="header">
             <h5>Chat Rooms</h5>
-            <a href="#" id="create-room" data-toggle="modal" data-target="#create-room-modal">
-                <i class="fas fa-plus"></i>
+            <a role="button" class="d-flex" id="create-room" data-bs-toggle="modal" data-bs-target="#create-room-modal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             </a>
         </div>
         <ul class="rooms list-unstyled" id="room-list" data-bind="foreach: chatRooms">
-            <li><a href="#" data-bind="text: $data.name, attr: { 'data-roomId': $data.id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == $data.name()}"></a></li>
+            <li>
+                <a href="#" data-bind="text: $data.name, attr: { 'data-roomId': $data.id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == $data.name()}"></a>
+            </li>
         </ul>
         <div class="profile">
             <div>
@@ -34,7 +31,9 @@
                 <a asp-area="Identity" asp-page="/Account/Manage/Index" data-bind="text: myName"></a>
             </div>
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
-                <button type="submit" class="btn-sign-out"><i class="fas fa-sign-out-alt"></i></button>
+                <button type="submit" class="btn-sign-out">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
             </form>
         </div>
     </div>
@@ -47,11 +46,11 @@
         <div class="header">
             <h5 id="joinedRoom" data-bind="text: joinedRoom()">Lobby</h5>
             <div class="room-actions">
-                <button type="button" class="btn btn-link text-secondary px-1" data-toggle="modal" data-target="#rename-room-modal">
-                    <i class="fas fa-edit"></i>
+                <button type="button" class="btn btn-link text-secondary px-1" data-bs-toggle="modal" data-bs-target="#rename-room-modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                 </button>
-                <button type="button" class="btn btn-link text-secondary px-1" data-toggle="modal" data-target="#remove-room-modal">
-                    <i class="fas fa-times"></i>
+                <button type="button" class="btn btn-link text-secondary px-1" data-bs-toggle="modal" data-bs-target="#remove-room-modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
         </div>
@@ -65,10 +64,7 @@
                         <div class="message-content d-flex flex-column">
                             <div class="d-flex justify-content-between">
                                 <span class="author" data-bind="text:$data.from"></span>
-                                <span class="timestamp">
-                                    <i class="far fa-clock"></i>
-                                    <span data-bind="text:$data.timestamp"></span>
-                                </span>
+                                <span class="timestamp" data-bind="text:$data.timestamp"></span>
                             </div>
                             <span class="content" data-bind="html:$data.content"></span>
                         </div>
@@ -81,15 +77,18 @@
             <div class="actions d-flex align-items-center">
                 <form method="post" asp-action="Upload" asp-controller="Upload" enctype="multipart/form-data" id="uploadForm">
                     <label for="UploadedFile" class="custom-file-upload">
-                        <i class="far fa-image"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     </label>
                     <input type="hidden" name="RoomId" data-bind="value: joinedRoomId()" />
                     <input type="file" id="UploadedFile" name="File" accept=".jpg,.jpeg,.png" data-bind="event: {change: uploadFiles}">
                 </form>
-                <a id="emojibtn" href="#">
-                    <i class="far fa-smile"></i>
+                <a role="button" id="emojibtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
                 </a>
-                <i class="fas fa-paper-plane" id="btn-send-message" data-bind="click: sendNewMessage"></i>
+                <a role="button" id="btn-send-message" data-bind="click: sendNewMessage">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </a>
+
             </div>
             <div class="emoticon-container d-none" id="emojis-container">
                 <a href="#">
@@ -143,61 +142,56 @@
     </div>
 </div>
 
-<div class="modal" id="create-room-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+
+<div class="modal fade" id="create-room-modal" tabindex="-1" aria-labelledby="createRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Create Room</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="createRoomModalLabel">Create Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <input type="text" class="form-control" id="roomName" placeholder="Room name">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click: createRoom">Create</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" data-bind="click: createRoom">Create</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal" id="rename-room-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="rename-room-modal" tabindex="-1" aria-labelledby="renameRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Rename Room</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="renameRoomModalLabel">Rename Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <input type="text" class="form-control" id="newRoomName" data-bind="value: $root.joinedRoom()">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click: editRoom">Update</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" data-bind="click: editRoom">Update</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal" id="remove-room-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="remove-room-modal" tabindex="-1" aria-labelledby="removeRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Delete Room</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="removeRoomModalLabel">Delete Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to delete this Chat Room?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" data-bind="click: deleteRoom">Delete</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" data-bind="click: deleteRoom">Delete</button>
             </div>
         </div>
     </div>
@@ -205,7 +199,7 @@
 
 @section Scripts {
     <script src="~/lib/knockout/knockout-latest.min.js"></script>
-    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/lib/microsoft-signalr/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/chat.js" asp-append-version="true"></script>
 }

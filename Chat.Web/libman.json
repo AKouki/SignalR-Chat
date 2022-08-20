@@ -3,12 +3,19 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "provider": "unpkg",
-      "library": "@microsoft/signalr@latest",
-      "destination": "wwwroot/js/signalr",
+      "library": "bootstrap@5.2.0",
+      "destination": "wwwroot/lib/bootstrap/",
       "files": [
-        "dist/browser/signalr.js",
-        "dist/browser/signalr.min.js"
+        "css/bootstrap.min.css",
+        "js/bootstrap.bundle.min.js"
+      ]
+    },
+    {
+      "library": "microsoft-signalr@6.0.8",
+      "destination": "wwwroot/lib/microsoft-signalr/",
+      "files": [
+        "signalr.min.js",
+        "signalr.js"
       ]
     },
     {
