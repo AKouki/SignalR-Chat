@@ -1,36 +1,36 @@
 ﻿@page
 @model LoginModel
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Sign in";
 }
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="login-container">
+<div class="card" style="max-width: 350px">
+    <div class="card-body">
         <img class="profile-avatar" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
-        <form id="account" method="post" class="row g-2">
+        <form id="account" method="post" class="row g-2 mt-2">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="col-12">
-                <label asp-for="Input.UserName"></label>
+                <label asp-for="Input.UserName" class="form-label"></label>
                 <input asp-for="Input.UserName" class="form-control" />
                 <span asp-validation-for="Input.UserName" class="text-danger"></span>
             </div>
             <div class="col-12">
-                <label asp-for="Input.Password"></label>
+                <label asp-for="Input.Password" class="form-label"></label>
                 <input asp-for="Input.Password" class="form-control" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <div class="col-12">
-                <div class="form-check">
+                <div class="form-check fs-14">
                     <input class="form-check-input" asp-for="Input.RememberMe">
                     <label class="form-check-label" asp-for="Input.RememberMe"></label>
                 </div>
             </div>
             <div class="col-12 mt-3">
-                <button type="submit" class="btn btn-sign-in">Sign in</button>
+                <button type="submit" class="btn btn-primary w-100">Sign in</button>
             </div>
             <div class="col-12 mt-3">
-                @*<a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>*@
-                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                @*<a class="d-inline-flex" asp-page="./ForgotPassword">Forgot your password?</a>*@
+                <a class="d-inline-flex" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
             </div>
         </form>
     </div>

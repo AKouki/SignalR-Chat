@@ -3,7 +3,7 @@
 
 <div class="alert alert-warning alert-dismissible d-none" id="errorAlert" role="alert">
     <span data-bind="text:serverInfoMessage"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" aria-label="Close"></button>
 </div>
 
 <div class="d-flex flex-column justify-content-center align-items-center vh-100" data-bind="css: isLoading() ? 'd-flex' : 'd-none'">
@@ -20,27 +20,27 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             </a>
         </div>
-        <ul class="rooms list-unstyled" id="room-list" data-bind="foreach: chatRooms">
+        <ul class="rooms list-unstyled" id="rooms-list" data-bind="foreach: chatRooms">
             <li>
-                <a href="#" data-bind="text: $data.name, attr: { 'data-roomId': $data.id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == $data.name()}"></a>
+                <a href="#" data-bind="text: name, attr: { 'data-roomId': id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == name()}"></a>
             </li>
         </ul>
         <div class="profile">
-            <div>
+            <div class="d-flex align-items-center flex-grow-1">
                 <img src="/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + myAvatar() }" />
                 <a asp-area="Identity" asp-page="/Account/Manage/Index" data-bind="text: myName"></a>
             </div>
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
-                <button type="submit" class="btn-sign-out">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                </button>
-            </form>
+            <div>
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
+                    <button type="submit" class="btn-sign-out">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
     <div class="main-content" data-bind="visible: joinedRoom().length == 0">
-        <span class="m-auto">
-            Please select room to join!
-        </span>
+        <span class="m-auto">Please select room to join!</span>
     </div>
     <div class="main-content" data-bind="visible: joinedRoom().length > 0">
         <div class="header">
@@ -54,26 +54,24 @@
                 </button>
             </div>
         </div>
-        <div class="chat-body">
-            <ul class="list-unstyled" data-bind="foreach: chatMessages">
+        <div class="messages-container">
+            <ul class="list-unstyled" id="messages-list" data-bind="foreach: chatMessages">
                 <li>
-                    <div class="chat-message d-flex" data-bind="css: $data.isMine() === true ? 'ismine' : 'isother'">
-                        <div class="left-side">
-                            <img src="/images/icons/avatar1.png" class="message-avatar" data-bind="attr: { src: '/images/icons/' + $data.avatar() }" />
-                        </div>
-                        <div class="message-content d-flex flex-column">
-                            <div class="d-flex justify-content-between">
-                                <span class="author" data-bind="text:$data.from"></span>
-                                <span class="timestamp" data-bind="text:$data.timestamp"></span>
+                    <div class="message-item" data-bind="css: { ismine: isMine() === true }">
+                        <img src="/images/icons/avatar1.png" class="avatar avatar-lg mx-2" data-bind="attr: { src: '/images/icons/' + avatar() }" />
+                        <div class="message-content">
+                            <div class="message-info d-flex flex-wrap align-items-center">
+                                <span class="author" data-bind="text: from"></span>
+                                <span class="timestamp" data-bind="text: timestampRelative, attr: { 'data-bs-title': timestampFull }" data-bs-toggle="tooltip" data-bs-placement="top"></span>
                             </div>
-                            <span class="content" data-bind="html:$data.content"></span>
+                            <div class="content" data-bind="html: content"></div>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
-        <div class="chat-input">
-            <input id="chat-message" type="text" value="" data-bind="value:message, valueUpdate: 'afterkeydown', event: { keypress: onEnter }" placeholder="What's on your mind?" />
+        <div class="message-input-container">
+            <input id="message-input" type="text" value="" data-bind="value:message, valueUpdate: 'afterkeydown', event: { keypress: onEnter }" placeholder="What's on your mind?" />
             <div class="actions d-flex align-items-center">
                 <form method="post" asp-action="Upload" asp-controller="Upload" enctype="multipart/form-data" id="uploadForm">
                     <label for="UploadedFile" class="custom-file-upload">
@@ -82,7 +80,7 @@
                     <input type="hidden" name="RoomId" data-bind="value: joinedRoomId()" />
                     <input type="file" id="UploadedFile" name="File" accept=".jpg,.jpeg,.png" data-bind="event: {change: uploadFiles}">
                 </form>
-                <a role="button" id="emojibtn">
+                <a role="button" id="btn-show-emojis">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
                 </a>
                 <a role="button" id="btn-send-message" data-bind="click: sendNewMessage">
@@ -90,35 +88,28 @@
                 </a>
 
             </div>
-            <div class="emoticon-container d-none" id="emojis-container">
-                <a href="#">
-                    <input type="hidden" value=":)" />
+            <div class="emojis-container d-none" id="emojis-container">
+                <button data-value=":)">
                     <img src="~/images/emojis/emoji1.png" />
-                </a>
-                <a href="#">
-                    <input type="hidden" value=":P" />
+                </button>
+                <button data-value=":P">
                     <img src="~/images/emojis/emoji2.png" />
-                </a>
-                <a href="#">
-                    <input type="hidden" value=":O" />
+                </button>
+                <button data-value=":O">
                     <img src="~/images/emojis/emoji3.png" />
-                </a>
-                <a href="#">
-                    <input type="hidden" value=":-)" />
+                </button>
+                <button data-value=":-)">
                     <img src="~/images/emojis/emoji4.png" />
-                </a>
-                <a href="#">
-                    <input type="hidden" value="B|" />
+                </button>
+                <button data-value="B|">
                     <img src="~/images/emojis/emoji5.png" />
-                </a>
-                <a href="#">
-                    <input type="hidden" value=":D" />
+                </button>
+                <button data-value=":D">
                     <img src="~/images/emojis/emoji6.png" />
-                </a>
-                <a href="#">
-                    <input type="hidden" value="<3" />
+                </button>
+                <button data-value="<3">
                     <img src="~/images/emojis/emoji7.png" />
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -126,22 +117,25 @@
         <div class="header">
             <h5>Who's Here (<span data-bind="text: filteredChatUsers().length">0</span>)</h5>
         </div>
-        <ul id="users-list" class="list-unstyled" data-bind="foreach: filteredChatUsers">
-            <li>
+        <ul class="list-unstyled flex-grow-1" id="users-list" data-bind="foreach: filteredChatUsers">
+            <li data-bind="attr: { 'data-username': userName}">
                 <div class="user">
-                    <img src="~/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + $data.avatar() }" />
-                    <div class="right-side">
-                        <input type="hidden" class="username" data-bind="value: $data.userName" />
-                        <span class="author" data-bind="text: $data.displayName"></span>
-                        <small data-bind="text: $data.device"></small>
+                    <img src="~/images/icons/avatar1.png" class="avatar me-2" data-bind="attr: { src: '/images/icons/' + avatar() }" />
+                    <div class="user-info">
+                        <span class="name" data-bind="text: displayName"></span>
+                        <span class="device" data-bind="text: device"></span>
                     </div>
                 </div>
             </li>
         </ul>
-        <input type="text" class="" placeholder="Search someone..." data-bind="value: filter, valueUpdate: 'afterkeydown'" />
+        <div class="position-relative search-container text-secondary">
+            <input type="text" class="" placeholder="Search" data-bind="value: filter, valueUpdate: 'afterkeydown'" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
     </div>
 </div>
-
 
 <div class="modal fade" id="create-room-modal" tabindex="-1" aria-labelledby="createRoomModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -151,7 +145,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="roomName" placeholder="Room name">
+                <input type="text" class="form-control" id="roomName" placeholder="Enter room name...">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -187,7 +181,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this Chat Room?</p>
+                <p class="mb-0">Are you sure you want to delete this Chat Room?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>

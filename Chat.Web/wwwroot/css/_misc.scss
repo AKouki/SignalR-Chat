@@ -1,0 +1,102 @@
+﻿// Typography and resets
+.fs-14 {
+    font-size: 14px;
+}
+
+.fw-500 {
+    font-weight: 500;
+}
+
+a {
+    text-decoration: none;
+}
+
+.alert-dismissible {
+    position: fixed;
+    width: 500px;
+    right: 25px;
+    top: 25px;
+}
+
+// Forms
+$form-label-color: #323E4A;
+$form-control-color: #323E4A;
+$form-control-border-color: #dfe5e6;
+$form-control-border-radius: 0.25rem;
+
+.form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.375rem;
+    font-weight: 500;
+    color: $form-label-color;
+}
+
+.form-control,
+.form-select {
+    color: $form-control-color;
+    border-color: $form-control-border-color;
+    border-radius: $form-control-border-radius;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+}
+
+.form-check-input {
+    border-color: $form-control-border-color;
+    margin-right: 8px;
+}
+
+form .btn {
+    font-size: 0.875rem;
+}
+
+// Cards
+.card {
+    margin-bottom: 25px;
+    border-radius: 4px;
+    background: white;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    padding: 30px 25px;
+}
+
+// Modals
+.modal-header {
+    padding: 0.5rem 1rem;
+    border-bottom: none;
+
+    .btn-close {
+        background-size: 0.75rem;
+        margin-right: -0.375rem;
+    }
+}
+
+.modal-body {
+    padding: 0.75rem 1rem;
+}
+
+.modal-footer {
+    padding-top: 0.5rem;
+    border-top: none;
+}
+
+// Avatar
+.avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    object-fit: cover;
+    width: 32px;
+    height: 32px;
+}
+
+.avatar-lg {
+    width: 40px;
+    height: 40px;
+}

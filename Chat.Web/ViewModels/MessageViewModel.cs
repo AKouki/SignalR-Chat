@@ -10,7 +10,7 @@ namespace Chat.Web.ViewModels
     {
         [Required]
         public string Content { get; set; }
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
         public string From { get; set; }
         [Required]
         public string Room { get; set; }

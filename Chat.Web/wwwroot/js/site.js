@@ -1,7 +1,7 @@
 ﻿$(function () {
     $('ul#users-list').on('click', 'li', function () {
-        var username = $("input[type=hidden].username", $(this)).val();
-        var input = $('#chat-message');
+        var username = $(this).data("username");
+        var input = $('#message-input');
 
         var text = input.val();
         if (text.startsWith("/")) {
@@ -14,27 +14,36 @@
         input.focus();
     });
 
-    $('#emojis-container').on('click', 'a', function () {
-        var value = $("input", $(this)).val();
-        var input = $('#chat-message');
-        input.val(input.val() + value);
+    $('#emojis-container').on('click', 'button', function () {
+        var emojiValue = $(this).data("value");
+        var input = $('#message-input');
+        input.val(input.val() + emojiValue + " ");
         input.focus();
         input.change();
     });
 
-    $("#emojibtn").click(function () {
+    $("#btn-show-emojis").click(function () {
         $("#emojis-container").toggleClass("d-none");
     });
 
-    $("#chat-message, #btn-send-message").click(function () {
-        $("#emojis-container").addClass("d-none")
+    $("#message-input, .messages-container, #btn-send-message, #emojis-container button").click(function () {
+        $("#emojis-container").addClass("d-none");
+    });
+
+    $(".modal").on("shown.bs.modal", function () {
+        $(this).find("input[type=text]:first-child").focus();
     });
 
     $('.modal').on('hidden.bs.modal', function () {
         $(".modal-body input:not(#newRoomName)").val("");
     });
 
-    $(".alert .close").on('click', function () {
+    $(".alert .btn-close").on('click', function () {
         $(this).parent().hide();
+    });
+
+    $('body').tooltip({
+        selector: '[data-bs-toggle="tooltip"]',
+        delay: { show: 500 }
     });
 });

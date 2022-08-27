@@ -43,23 +43,26 @@ $text-color: rgba(white, 0.85);
 
     ul {
         overflow-y: auto;
-    }
 
-    ul li a {
-        display: block;
-        padding: 2px 10px;
-        font-size: 14px;
-        text-decoration: none;
-        transition: all 50ms ease-in-out;
+        li {
+            margin-bottom: 2px;
 
-        &.active,
-        &:hover {
-            background: rgba(white, 0.25);
-        }
+            a {
+                display: block;
+                padding: 2px 10px;
+                font-size: 14px;
+                text-decoration: none;
 
-        &:before {
-            content: "#";
-            margin-right: 2px;
+                &.active,
+                &:hover {
+                    background: rgba(white, 0.25);
+                }
+
+                &:before {
+                    content: "#";
+                    margin-right: 2px;
+                }
+            }
         }
     }
 
@@ -68,35 +71,28 @@ $text-color: rgba(white, 0.85);
         justify-content: space-between;
         align-items: center;
         padding: 10px;
-        background: darken($bg-color, 5%);
+        background: rgba(black, 0.1);
         margin-top: auto;
 
-        div {
-            display: flex;
-            align-items: center;
-            flex-grow: 1;
+        .user-avatar {
+            @extend .avatar;
+            border: 2px solid white;
+            padding: 1px;
+            margin-right: 5px;
+        }
 
-            .user-avatar {
-                width: 32px;
-                height: 32px;
-                border: 2px solid white;
-                padding: 1px;
-                border-radius: 50%;
-                margin-right: 5px;
-            }
-
-            a {
-                font-size: 14px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 120px;
-            }
+        a {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
         }
 
         .btn-sign-out {
             background: none;
             border: none;
+            display: flex;
         }
     }
 }

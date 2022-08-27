@@ -43,7 +43,7 @@ namespace Chat.Web.Hubs
                         From = sender.FullName,
                         Avatar = sender.Avatar,
                         Room = "",
-                        Timestamp = DateTime.Now.ToLongTimeString()
+                        Timestamp = DateTime.Now
                     };
 
                     // Send the message

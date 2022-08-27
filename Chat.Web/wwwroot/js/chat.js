@@ -13,7 +13,7 @@
         var isMine = messageView.from === viewModel.myName();
         var message = new ChatMessage(messageView.content, messageView.timestamp, messageView.from, isMine, messageView.avatar);
         viewModel.chatMessages.push(message);
-        $(".chat-body").animate({ scrollTop: $(".chat-body")[0].scrollHeight }, 1000);
+        $(".messages-container").animate({ scrollTop: $(".messages-container")[0].scrollHeight }, 1000);
     });
 
     connection.on("getProfileInfo", function (displayName, avatar) {
@@ -57,7 +57,7 @@
         else {
             // Join to the first room in list
             setTimeout(function () {
-                $("ul#room-list li a")[0].click();
+                $("#rooms-list li a")[0].click();
             }, 50);
         }
     });
@@ -201,7 +201,7 @@
                             data[i].avatar))
                     }
 
-                    $(".chat-body").animate({ scrollTop: $(".chat-body")[0].scrollHeight }, 1000);
+                    $(".messages-container").animate({ scrollTop: $(".messages-container")[0].scrollHeight }, 1000);
                 });
         }
 
@@ -280,9 +280,55 @@
         var self = this;
         self.content = ko.observable(content);
         self.timestamp = ko.observable(timestamp);
+        self.timestampRelative = ko.pureComputed(function () {
+            // Get diff
+            var date = new Date(self.timestamp());
+            var now = new Date();
+            var diff = Math.round((date.getTime() - now.getTime()) / (1000 * 3600 * 24));
+
+            // Format date
+            var { dateOnly, timeOnly } = formatDate(date);
+
+            // Generate relative datetime
+            if (diff == 0)
+                return `Today, ${timeOnly}`;
+            if (diff == -1)
+                return `Yestrday, ${timeOnly}`;
+
+            return `${dateOnly}`;
+        });
+        self.timestampFull = ko.pureComputed(function () {
+            var date = new Date(self.timestamp());
+            var { fullDateTime } = formatDate(date);
+            return fullDateTime;
+        });
         self.from = ko.observable(from);
         self.isMine = ko.observable(isMine);
         self.avatar = ko.observable(avatar);
+    }
+
+    function formatDate(date) {
+        // Get fields
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var d = hours >= 12 ? "PM" : "AM";
+
+        // Correction
+        if (hours > 12)
+            hours = hours % 12;
+
+        if (minutes < 10)
+            minutes = "0" + minutes;
+
+        // Result
+        var dateOnly = `${day}/${month}/${year}`;
+        var timeOnly = `${hours}:${minutes} ${d}`;
+        var fullDateTime = `${dateOnly} ${timeOnly}`;
+
+        return { dateOnly, timeOnly, fullDateTime };
     }
 
     var viewModel = new AppViewModel();

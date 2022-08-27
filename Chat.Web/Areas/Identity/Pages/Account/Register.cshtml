@@ -4,39 +4,38 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="register-container">
+<div class="card" style="max-width: 450px;">
+    <div class="card-body">
         <h4>Create a new account.</h4>
-        <hr />
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post" class="row g-2">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="col-12">
-                <label asp-for="Input.UserName"></label>
+                <label asp-for="Input.UserName" class="form-label"></label>
                 <input asp-for="Input.UserName" class="form-control" />
                 <span asp-validation-for="Input.UserName" class="text-danger"></span>
             </div>
             <div class="col-12">
-                <label asp-for="Input.Email"></label>
+                <label asp-for="Input.Email" class="form-label"></label>
                 <input asp-for="Input.Email" class="form-control" />
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="col-12">
-                <label asp-for="Input.Password"></label>
+                <label asp-for="Input.Password" class="form-label"></label>
                 <input asp-for="Input.Password" class="form-control" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <div class="col-12">
-                <label asp-for="Input.ConfirmPassword"></label>
+                <label asp-for="Input.ConfirmPassword" class="form-label"></label>
                 <input asp-for="Input.ConfirmPassword" class="form-control" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="col-12">
-                <label asp-for="Input.FullName"></label>
+                <label asp-for="Input.FullName" class="form-label"></label>
                 <input asp-for="Input.FullName" class="form-control" />
                 <span asp-validation-for="Input.FullName" class="text-danger"></span>
             </div>
-            <div class="col-12">
-                <p>Select your Avatar</p>
+            <div class="col-12 mt-3 mb-2">
+                <p class="form-label">Select your Avatar</p>
                 <label>
                     <input asp-for="Input.Avatar" type="radio" value="0" checked />
                     <img class="avatar-icon" src="~/images/icons/avatar1.png" alt="" />
@@ -55,7 +54,7 @@
                 </label>
             </div>
             <div class="col-12 mt-3">
-                <button type="submit" class="btn btn-sign-up">Register</button>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
             </div>
             <div class="col-12 mt-3">
                 <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Already have an account?</a>
