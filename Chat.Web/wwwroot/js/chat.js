@@ -42,6 +42,10 @@
         viewModel.roomDeleted(id);
     });
 
+    connection.on("removeChatMessage", function (id) {
+        viewModel.messageDeleted(id);
+    });
+
     connection.on("onError", function (message) {
         viewModel.serverInfoMessage(message);
         $("#errorAlert").removeClass("d-none").show().delay(5000).fadeOut(500);
@@ -194,10 +198,6 @@
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: messageId })
-            }).then(response => {
-                if (response.ok) {
-                    self.messageDeleted(messageId);
-                }
             });
         }
 

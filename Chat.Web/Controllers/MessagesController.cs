@@ -106,6 +106,8 @@ namespace Chat.Web.Controllers
             _context.Messages.Remove(message);
             await _context.SaveChangesAsync();
 
+            await _hubContext.Clients.All.SendAsync("removeChatMessage", message.Id);
+
             return NoContent();
         }
     }
