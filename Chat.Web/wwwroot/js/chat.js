@@ -11,7 +11,7 @@
 
     connection.on("newMessage", function (messageView) {
         var isMine = messageView.from === viewModel.myName();
-        var message = new ChatMessage(messageView.content, messageView.timestamp, messageView.from, isMine, messageView.avatar);
+        var message = new ChatMessage(messageView.id, messageView.content, messageView.timestamp, messageView.from, isMine, messageView.avatar);
         viewModel.chatMessages.push(message);
         $(".messages-container").animate({ scrollTop: $(".messages-container")[0].scrollHeight }, 1000);
     });
@@ -187,6 +187,20 @@
             });
         }
 
+        self.deleteMessage = function () {
+            var messageId = $("#itemToDelete").val();
+
+            fetch('/api/Messages/' + messageId, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: messageId })
+            }).then(response => {
+                if (response.ok) {
+                    self.messageDeleted(messageId);
+                }
+            });
+        }
+
         self.messageHistory = function () {
             fetch('/api/Messages/Room/' + viewModel.joinedRoom())
                 .then(response => response.json())
@@ -194,7 +208,8 @@
                     self.chatMessages.removeAll();
                     for (var i = 0; i < data.length; i++) {
                         var isMine = data[i].from == self.myName();
-                        self.chatMessages.push(new ChatMessage(data[i].content,
+                        self.chatMessages.push(new ChatMessage(data[i].id,
+                            data[i].content,
                             data[i].timestamp,
                             data[i].from,
                             isMine,
@@ -228,6 +243,15 @@
                     temp = room;
             });
             self.chatRooms.remove(temp);
+        }
+
+        self.messageDeleted = function (id) {
+            var temp;
+            ko.utils.arrayForEach(self.chatMessages(), function (message) {
+                if (message.id() == id)
+                    temp = message;
+            });
+            self.chatMessages.remove(temp);
         }
 
         self.userAdded = function (user) {
@@ -276,8 +300,9 @@
         self.device = ko.observable(device);
     }
 
-    function ChatMessage(content, timestamp, from, isMine, avatar) {
+    function ChatMessage(id, content, timestamp, from, isMine, avatar) {
         var self = this;
+        self.id = ko.observable(id);
         self.content = ko.observable(content);
         self.timestamp = ko.observable(timestamp);
         self.timestampRelative = ko.pureComputed(function () {

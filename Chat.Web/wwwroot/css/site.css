@@ -145,6 +145,10 @@
 .message-item .message-content .content .post-image {
   width: 100%;
 }
+.message-item .actions svg {
+  width: 16px !important;
+  height: 16px !important;
+}
 
 .ismine {
   flex-direction: row-reverse;
@@ -418,6 +422,14 @@ form .btn {
 .modal-footer {
   padding-top: 0.5rem;
   border-top: none;
+}
+
+.dropdown-menu {
+  border: 1px solid #dfdfdf;
+}
+
+.dropdown-divider {
+  border-top: 1px solid #dfdfdf;
 }
 
 .avatar, .sidebar .profile .user-avatar {

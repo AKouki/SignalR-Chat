@@ -66,6 +66,18 @@
                             </div>
                             <div class="content" data-bind="html: content"></div>
                         </div>
+                        <div class="actions d-none">
+                            <div class="dropdown dropstart">
+                                <a class="text-secondary" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="#" data-bind="attr: { 'data-messageId': id }" data-bs-toggle="modal" data-bs-target="#remove-message-modal">Delete</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -86,7 +98,6 @@
                 <a role="button" id="btn-send-message" data-bind="click: sendNewMessage">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </a>
-
             </div>
             <div class="emojis-container d-none" id="emojis-container">
                 <button data-value=":)">
@@ -145,7 +156,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="roomName" placeholder="Enter room name...">
+                <input type="text" class="form-control" id="roomName" placeholder="Enter room name..." />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -163,7 +174,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="newRoomName" data-bind="value: $root.joinedRoom()">
+                <input type="text" class="form-control" id="newRoomName" data-bind="value: $root.joinedRoom()" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -186,6 +197,25 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" data-bind="click: deleteRoom">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="remove-message-modal" tabindex="-1" aria-labelledby="removeMessageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeMessageModalLabel">Delete Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Are you sure you want to delete this Message?</p>
+                <input type="hidden" class="form-control" id="itemToDelete" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" data-bind="click: deleteMessage">Delete</button>
             </div>
         </div>
     </div>

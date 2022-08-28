@@ -85,6 +85,16 @@ form .btn {
     border-top: none;
 }
 
+// Dropdowns
+$dropdown-border-color: #dfdfdf;
+.dropdown-menu {
+    border: 1px solid $dropdown-border-color;
+}
+
+.dropdown-divider {
+    border-top: 1px solid $dropdown-border-color;
+}
+
 // Avatar
 .avatar {
     display: flex;

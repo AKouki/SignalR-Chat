@@ -83,6 +83,13 @@ $message-input-bg-color: #f5f5f5;
             }
         }
     }
+
+    .actions {
+        svg {
+            width: 16px !important;
+            height: 16px !important;
+        }
+    }
 }
 
 .ismine {
@@ -106,7 +113,6 @@ $message-input-bg-color: #f5f5f5;
         }
     }
 }
-
 
 .message-input-container {
     display: flex;
