@@ -83,7 +83,7 @@
             </ul>
         </div>
         <div class="message-input-container">
-            <input id="message-input" type="text" value="" data-bind="value:message, valueUpdate: 'afterkeydown', event: { keypress: onEnter }" placeholder="What's on your mind?" />
+            <input id="message-input" type="text" value="" maxlength="500" data-bind="value:message, valueUpdate: 'afterkeydown', event: { keypress: onEnter }" placeholder="What's on your mind?" />
             <div class="actions d-flex align-items-center">
                 <form method="post" asp-action="Upload" asp-controller="Upload" enctype="multipart/form-data" id="uploadForm">
                     <label for="UploadedFile" class="custom-file-upload">
@@ -156,7 +156,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="roomName" placeholder="Enter room name..." />
+                <input type="text" class="form-control" id="roomName" maxlength="100" placeholder="Enter room name..." />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -174,7 +174,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="newRoomName" data-bind="value: $root.joinedRoom()" />
+                <input type="text" class="form-control" id="newRoomName" maxlength="100" data-bind="value: $root.joinedRoom()" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
