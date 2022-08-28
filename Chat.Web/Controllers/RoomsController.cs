@@ -94,7 +94,7 @@ namespace Chat.Web.Controllers
 
             await _hubContext.Clients.All.SendAsync("updateChatRoom", new { id = room.Id, room.Name});
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -114,7 +114,7 @@ namespace Chat.Web.Controllers
             await _hubContext.Clients.All.SendAsync("removeChatRoom", room.Id);
             await _hubContext.Clients.Group(room.Name).SendAsync("onRoomDeleted", string.Format("Room {0} has been deleted.\nYou are moved to the first available room!", room.Name));
 
-            return NoContent();
+            return Ok();
         }
     }
 }
