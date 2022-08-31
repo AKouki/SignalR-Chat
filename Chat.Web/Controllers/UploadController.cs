@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Chat.Web.Data;
+using Chat.Web.Helpers;
 using Chat.Web.Hubs;
 using Chat.Web.Models;
 using Chat.Web.ViewModels;
@@ -29,17 +30,20 @@ namespace Chat.Web.Controllers
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _environment;
         private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IFileValidator _fileValidator;
 
         public UploadController(ApplicationDbContext context,
             IMapper mapper,
             IWebHostEnvironment environment,
             IHubContext<ChatHub> hubContext,
-            IConfiguration configruation)
+            IConfiguration configruation,
+            IFileValidator fileValidator)
         {
             _context = context;
             _mapper = mapper;
             _environment = environment;
             _hubContext = hubContext;
+            _fileValidator = fileValidator;
 
             FileSizeLimit = configruation.GetSection("FileUpload").GetValue<int>("FileSizeLimit");
             AllowedExtensions = configruation.GetSection("FileUpload").GetValue<string>("AllowedExtensions").Split(",");
@@ -51,10 +55,8 @@ namespace Chat.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (!Validate(uploadViewModel.File))
-                {
+                if (!_fileValidator.IsValid(uploadViewModel.File))
                     return BadRequest("Validation failed!");
-                }
 
                 var fileName = DateTime.Now.ToString("yyyymmddMMss") + "_" + Path.GetFileName(uploadViewModel.File.FileName);
                 var folderPath = Path.Combine(_environment.WebRootPath, "uploads");
@@ -96,18 +98,6 @@ namespace Chat.Web.Controllers
             }
 
             return BadRequest();
-        }
-
-        private bool Validate(IFormFile file)
-        {
-            if (file.Length > FileSizeLimit)
-                return false;
-
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (string.IsNullOrEmpty(extension) || !AllowedExtensions.Any(s => s.Contains(extension)))
-                return false;
-
-            return true;
         }
     }
 }

@@ -1,0 +1,74 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-12">
+        <div class="preview d-flex my-2">
+            @if (string.IsNullOrEmpty(Model.Avatar))
+            {
+                <span class="avatar avatar-xl">@Model.FullName?.ElementAt(0)</span>
+            }
+            else
+            {
+                <img class="avatar avatar-xl" src="/avatars/@Model.Avatar" />
+            }
+            <div class="ms-3">
+                <div class="d-flex">
+                    <form asp-page-handler="UpdateAvatar" id="update-avatar-form" method="post" enctype="multipart/form-data">
+                        <input asp-for="AvatarFile" class="form-control d-none" accept=".jpg,.jpeg,.png" />
+                        <label for="AvatarFile">
+                            <span class="btn btn-primary btn-sm me-2">Update</span>
+                        </label>
+                    </form>
+                    <form asp-page-handler="DeleteAvatar" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm my-0@(string.IsNullOrEmpty(Model.Avatar) ? " disabled" : "")">Remove</button>
+                    </form>
+                </div>
+                <div class="form-text mt-2">Allowed file types: .jpg, .jpeg, .png.<br />Maximum file size: 1MB.</div>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.UploadAvatarErrorMessage))
+        {
+            <span class="text-danger fs-14">@Model.UploadAvatarErrorMessage</span>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating mt-3">
+                <input asp-for="Username" class="form-control" disabled />
+                <label asp-for="Username" class="form-label"></label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.PhoneNumber" class="form-control" />
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            $("input[Name=AvatarFile]").on("change", function () {
+                if (this.files.length > 0) {
+                    $("#update-avatar-form").submit();
+                }
+            });
+        });
+    </script>
+}

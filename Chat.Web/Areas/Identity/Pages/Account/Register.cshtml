@@ -4,7 +4,7 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="card" style="max-width: 450px;">
+<div class="card" style="max-width: 400px;">
     <div class="card-body">
         <h4>Create a new account.</h4>
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post" class="row g-2">
@@ -33,25 +33,6 @@
                 <label asp-for="Input.FullName" class="form-label"></label>
                 <input asp-for="Input.FullName" class="form-control" />
                 <span asp-validation-for="Input.FullName" class="text-danger"></span>
-            </div>
-            <div class="col-12 mt-3 mb-2">
-                <p class="form-label">Select your Avatar</p>
-                <label>
-                    <input asp-for="Input.Avatar" type="radio" value="0" checked />
-                    <img class="avatar-icon" src="~/images/icons/avatar1.png" alt="" />
-                </label>
-                <label>
-                    <input asp-for="Input.Avatar" type="radio" value="1" />
-                    <img class="avatar-icon" src="~/images/icons/avatar2.png" alt="" />
-                </label>
-                <label>
-                    <input asp-for="Input.Avatar" type="radio" value="2" />
-                    <img class="avatar-icon" src="~/images/icons/avatar3.png" alt="" />
-                </label>
-                <label>
-                    <input asp-for="Input.Avatar" type="radio" value="3" />
-                    <img class="avatar-icon" src="~/images/icons/avatar4.png" alts="" />
-                </label>
             </div>
             <div class="col-12 mt-3">
                 <button type="submit" class="btn btn-primary w-100">Register</button>

@@ -71,10 +71,6 @@ namespace Chat.Web.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-
-            [Required]
-            [Display(Name = "Avatar")]
-            public string Avatar { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -89,13 +85,7 @@ namespace Chat.Web.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var avatars = new string[] { "avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png" };
-                var index = int.Parse(Input.Avatar);
-                if (index < 0 || index > avatars.Count() - 1)
-                    index = 0;
-
-                var avatarName = avatars[index];
-                var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email, FullName = Input.FullName, Avatar = avatarName };
+                var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email, FullName = Input.FullName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

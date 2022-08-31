@@ -77,8 +77,11 @@
         self.joinedRoomId = ko.observable("");
         self.serverInfoMessage = ko.observable("");
         self.myName = ko.observable("");
-        self.myAvatar = ko.observable("avatar1.png");
+        self.myAvatar = ko.observable("");
         self.isLoading = ko.observable(true);
+        self.showAvatar = ko.computed(function () {
+            return self.isLoading() == false;
+        });
 
         self.onEnter = function (d, e) {
             if (e.keyCode === 13) {

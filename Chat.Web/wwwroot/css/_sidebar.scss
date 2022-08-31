@@ -74,13 +74,6 @@ $text-color: rgba(white, 0.85);
         background: rgba(black, 0.1);
         margin-top: auto;
 
-        .user-avatar {
-            @extend .avatar;
-            border: 2px solid white;
-            padding: 1px;
-            margin-right: 5px;
-        }
-
         a {
             font-size: 14px;
             white-space: nowrap;

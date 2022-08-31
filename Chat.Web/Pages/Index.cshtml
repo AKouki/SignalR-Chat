@@ -27,7 +27,8 @@
         </ul>
         <div class="profile">
             <div class="d-flex align-items-center flex-grow-1">
-                <img src="/images/icons/avatar1.png" class="user-avatar" data-bind="attr: { src: '/images/icons/' + myAvatar() }" />
+                <span class="avatar me-2 text-uppercase" data-bind="visible: myAvatar() == null, text: myName()[0]"></span>
+                <img class="avatar me-2" data-bind="visible: myAvatar() != null, attr: { src: showAvatar() ? '/avatars/' + myAvatar() : '' }" />
                 <a asp-area="Identity" asp-page="/Account/Manage/Index" data-bind="text: myName"></a>
             </div>
             <div>
@@ -58,7 +59,8 @@
             <ul class="list-unstyled" id="messages-list" data-bind="foreach: chatMessages">
                 <li>
                     <div class="message-item" data-bind="css: { ismine: isMine() === true }">
-                        <img src="/images/icons/avatar1.png" class="avatar avatar-lg mx-2" data-bind="attr: { src: '/images/icons/' + avatar() }" />
+                        <span class="avatar avatar-lg mx-2 text-uppercase" data-bind="visible: avatar() == null, text: from()[0]"></span>
+                        <img class="avatar avatar-lg mx-2" data-bind="visible: avatar() != null, attr: { src: '/avatars/' + avatar() }" />
                         <div class="message-content">
                             <div class="message-info d-flex flex-wrap align-items-center">
                                 <span class="author" data-bind="text: from"></span>
@@ -131,7 +133,8 @@
         <ul class="list-unstyled flex-grow-1" id="users-list" data-bind="foreach: filteredChatUsers">
             <li data-bind="attr: { 'data-username': userName}">
                 <div class="user">
-                    <img src="~/images/icons/avatar1.png" class="avatar me-2" data-bind="attr: { src: '/images/icons/' + avatar() }" />
+                    <span class="avatar me-2 text-uppercase" data-bind="visible: avatar() == null, text: displayName()[0]"></span>
+                    <img class="avatar me-2" data-bind="visible: avatar() != null, attr: { src: '/avatars/' + avatar() }" />
                     <div class="user-info">
                         <span class="name" data-bind="text: displayName"></span>
                         <span class="device" data-bind="text: device"></span>

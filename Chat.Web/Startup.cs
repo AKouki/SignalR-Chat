@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Chat.Web.Hubs;
 using Chat.Web.Models;
 using AutoMapper;
+using Chat.Web.Helpers;
 
 namespace Chat.Web
 {
@@ -43,6 +44,7 @@ namespace Chat.Web
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<IFileValidator, FileValidator>();
             services.AddRazorPages();
             services.AddControllers();
             services.AddSignalR();

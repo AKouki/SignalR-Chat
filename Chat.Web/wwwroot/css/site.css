@@ -59,11 +59,6 @@
   background: rgba(0, 0, 0, 0.1);
   margin-top: auto;
 }
-.sidebar .profile .user-avatar {
-  border: 2px solid white;
-  padding: 1px;
-  margin-right: 5px;
-}
 .sidebar .profile a {
   font-size: 14px;
   white-space: nowrap;
@@ -432,7 +427,7 @@ form .btn {
   border-top: 1px solid #dfdfdf;
 }
 
-.avatar, .sidebar .profile .user-avatar {
+.avatar {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -440,11 +435,19 @@ form .btn {
   object-fit: cover;
   width: 32px;
   height: 32px;
+  background: #549d54;
+  color: white;
 }
 
 .avatar-lg {
   width: 40px;
   height: 40px;
+}
+
+.avatar-xl {
+  width: 96px;
+  height: 96px;
+  font-size: 20px;
 }
 
 body {
