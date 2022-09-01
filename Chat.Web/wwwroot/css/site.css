@@ -139,6 +139,7 @@
 }
 .message-item .message-content .content .post-image {
   width: 100%;
+  border-radius: 2px;
 }
 .message-item .actions svg {
   width: 16px !important;
