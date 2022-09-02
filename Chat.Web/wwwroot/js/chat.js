@@ -120,7 +120,12 @@
                 fetch('/api/Messages', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ room: roomName, content: message })
+                    body: JSON.stringify({ room: roomName, content: message }),
+                    redirect: 'follow'
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
                 });
             }
         }
@@ -172,7 +177,12 @@
             fetch('/api/Rooms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: roomName })
+                body: JSON.stringify({ name: roomName }),
+                redirect: 'follow'
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
             });
         }
 

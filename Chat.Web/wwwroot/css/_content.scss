@@ -183,3 +183,22 @@ $message-input-bg-color: #f5f5f5;
         }
     }
 }
+
+.disabled {
+    cursor: default;
+
+    svg {
+        pointer-events: none;
+    }
+}
+
+.btn-reset {
+    padding: 2px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 10px;
+    font-size: 14px;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

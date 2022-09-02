@@ -53,51 +53,54 @@ namespace Chat.Web.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload([FromForm] UploadViewModel uploadViewModel)
         {
-            if (ModelState.IsValid)
-            {
-                if (!_fileValidator.IsValid(uploadViewModel.File))
-                    return BadRequest("Validation failed!");
+            await Task.Delay(0);
+            return Ok();
 
-                var fileName = DateTime.Now.ToString("yyyymmddMMss") + "_" + Path.GetFileName(uploadViewModel.File.FileName);
-                var folderPath = Path.Combine(_environment.WebRootPath, "uploads");
-                var filePath = Path.Combine(folderPath, fileName);
-                if (!Directory.Exists(folderPath))
-                    Directory.CreateDirectory(folderPath);
+            //if (ModelState.IsValid)
+            //{
+            //    if (!_fileValidator.IsValid(uploadViewModel.File))
+            //        return BadRequest("Validation failed!");
 
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await uploadViewModel.File.CopyToAsync(fileStream);
-                }
+            //    var fileName = DateTime.Now.ToString("yyyymmddMMss") + "_" + Path.GetFileName(uploadViewModel.File.FileName);
+            //    var folderPath = Path.Combine(_environment.WebRootPath, "uploads");
+            //    var filePath = Path.Combine(folderPath, fileName);
+            //    if (!Directory.Exists(folderPath))
+            //        Directory.CreateDirectory(folderPath);
 
-                var user = _context.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-                var room = _context.Rooms.Where(r => r.Id == uploadViewModel.RoomId).FirstOrDefault();
-                if (user == null || room == null)
-                    return NotFound();
+            //    using (var fileStream = new FileStream(filePath, FileMode.Create))
+            //    {
+            //        await uploadViewModel.File.CopyToAsync(fileStream);
+            //    }
 
-                string htmlImage = string.Format(
-                    "<a href=\"/uploads/{0}\" target=\"_blank\">" +
-                    "<img src=\"/uploads/{0}\" class=\"post-image\">" +
-                    "</a>", fileName);
+            //    var user = _context.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            //    var room = _context.Rooms.Where(r => r.Id == uploadViewModel.RoomId).FirstOrDefault();
+            //    if (user == null || room == null)
+            //        return NotFound();
 
-                var message = new Message()
-                {
-                    Content = Regex.Replace(htmlImage, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty),
-                    Timestamp = DateTime.Now,
-                    FromUser = user,
-                    ToRoom = room
-                };
+            //    string htmlImage = string.Format(
+            //        "<a href=\"/uploads/{0}\" target=\"_blank\">" +
+            //        "<img src=\"/uploads/{0}\" class=\"post-image\">" +
+            //        "</a>", fileName);
 
-                await _context.Messages.AddAsync(message);
-                await _context.SaveChangesAsync();
+            //    var message = new Message()
+            //    {
+            //        Content = Regex.Replace(htmlImage, @"(?i)<(?!img|a|/a|/img).*?>", string.Empty),
+            //        Timestamp = DateTime.Now,
+            //        FromUser = user,
+            //        ToRoom = room
+            //    };
 
-                // Send image-message to group
-                var messageViewModel = _mapper.Map<Message, MessageViewModel>(message);
-                await _hubContext.Clients.Group(room.Name).SendAsync("newMessage", messageViewModel);
+            //    await _context.Messages.AddAsync(message);
+            //    await _context.SaveChangesAsync();
 
-                return Ok();
-            }
+            //    // Send image-message to group
+            //    var messageViewModel = _mapper.Map<Message, MessageViewModel>(message);
+            //    await _hubContext.Clients.Group(room.Name).SendAsync("newMessage", messageViewModel);
 
-            return BadRequest();
+            //    return Ok();
+            //}
+
+            //return BadRequest();
         }
     }
 }

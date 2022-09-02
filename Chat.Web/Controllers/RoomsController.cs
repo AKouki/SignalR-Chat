@@ -12,6 +12,7 @@ using AutoMapper;
 using Chat.Web.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Chat.Web.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace Chat.Web.Controllers
 {
@@ -23,20 +24,25 @@ namespace Chat.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IHubContext<ChatHub> _hubContext;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public RoomsController(ApplicationDbContext context,
             IMapper mapper,
-            IHubContext<ChatHub> hubContext)
+            IHubContext<ChatHub> hubContext,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _mapper = mapper;
             _hubContext = hubContext;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoomViewModel>>> Get()
         {
-            var rooms = await _context.Rooms.ToListAsync();
+            var rooms = await _context.Rooms
+                .OrderBy(r => r.Id)
+                .ToListAsync();
 
             var roomsViewModel = _mapper.Map<IEnumerable<Room>, IEnumerable<RoomViewModel>>(rooms);
 
@@ -57,22 +63,30 @@ namespace Chat.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<Room>> Create(RoomViewModel roomViewModel)
         {
-            if (_context.Rooms.Any(r => r.Name == roomViewModel.Name))
-                return BadRequest("Invalid room name or room already exists");
-
-            var user = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            var room = new Room()
+            if (ShouldReset())
             {
-                Name = roomViewModel.Name,
-                Admin = user
-            };
+                await DbInitializer.Initialize(_context, _userManager);
+                return Redirect("/");
+            }
+            else
+            {
+                if (_context.Rooms.Any(r => r.Name == roomViewModel.Name))
+                    return BadRequest("Invalid room name or room already exists");
 
-            _context.Rooms.Add(room);
-            await _context.SaveChangesAsync();
+                var user = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+                var room = new Room()
+                {
+                    Name = roomViewModel.Name,
+                    Admin = user
+                };
 
-            await _hubContext.Clients.All.SendAsync("addChatRoom", new { id = room.Id, name = room.Name });
+                _context.Rooms.Add(room);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Get), new { id = room.Id }, new { id = room.Id, name = room.Name });
+                await _hubContext.Clients.All.SendAsync("addChatRoom", new { id = room.Id, name = room.Name });
+
+                return CreatedAtAction(nameof(Get), new { id = room.Id }, new { id = room.Id, name = room.Name });
+            }
         }
 
         [HttpPut("{id}")]
@@ -92,7 +106,7 @@ namespace Chat.Web.Controllers
             room.Name = roomViewModel.Name;
             await _context.SaveChangesAsync();
 
-            await _hubContext.Clients.All.SendAsync("updateChatRoom", new { id = room.Id, room.Name});
+            await _hubContext.Clients.All.SendAsync("updateChatRoom", new { id = room.Id, room.Name });
 
             return Ok();
         }
@@ -115,6 +129,19 @@ namespace Chat.Web.Controllers
             await _hubContext.Clients.Group(room.Name).SendAsync("onRoomDeleted", string.Format("Room {0} has been deleted.\nYou are moved to the first available room!", room.Name));
 
             return Ok();
+        }
+
+        private bool ShouldReset()
+        {
+            var rooms = _context.Rooms.Count();
+            var messages = _context.Messages.Count();
+
+            if ((rooms + messages) > 500)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

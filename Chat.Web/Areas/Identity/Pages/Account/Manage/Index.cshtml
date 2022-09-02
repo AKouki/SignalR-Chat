@@ -10,6 +10,9 @@
 
 <div class="row">
     <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            Change avatar is disabled for security reasons.
+        </div>
         <div class="preview d-flex my-2">
             @if (string.IsNullOrEmpty(Model.Avatar))
             {
@@ -24,11 +27,11 @@
                     <form asp-page-handler="UpdateAvatar" id="update-avatar-form" method="post" enctype="multipart/form-data">
                         <input asp-for="AvatarFile" class="form-control d-none" accept=".jpg,.jpeg,.png" />
                         <label for="AvatarFile">
-                            <span class="btn btn-primary btn-sm me-2">Update</span>
+                            <span class="btn btn-primary btn-sm me-2 disabled">Update</span>
                         </label>
                     </form>
                     <form asp-page-handler="DeleteAvatar" method="post">
-                        <button type="submit" class="btn btn-danger btn-sm my-0@(string.IsNullOrEmpty(Model.Avatar) ? " disabled" : "")">Remove</button>
+                        <button type="submit" class="btn btn-danger btn-sm my-0 disabled">Remove</button>
                     </form>
                 </div>
                 <div class="form-text mt-2">Allowed file types: .jpg, .jpeg, .png.<br />Maximum file size: 1MB.</div>
@@ -62,7 +65,7 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
-    <script>
+    @*<script>
         $(document).ready(function () {
             $("input[Name=AvatarFile]").on("change", function () {
                 if (this.files.length > 0) {
@@ -70,5 +73,5 @@
                 }
             });
         });
-    </script>
+    </script>*@
 }
