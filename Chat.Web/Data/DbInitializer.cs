@@ -39,13 +39,15 @@ namespace Chat.Web.Data
                 {
                     UserName = "admin",
                     Email = "admin@admin.com",
-                    FullName = "James Smith"
+                    FullName = "James Smith",
+                    Avatar = "avatar1.jpg"
                 },
                 new ApplicationUser()
                 {
                     UserName = "admin2",
                     Email = "admin2@admin.com",
-                    FullName = "Maria Nikolaou"
+                    FullName = "Maria Nikolaou",
+                    Avatar = "avatar2.jpg"
                 }
             };
 
@@ -90,7 +92,7 @@ namespace Chat.Web.Data
                 "<a href=\"/uploads/demo.jpg\" target=\"_blank\"><img src=\"/uploads/demo.jpg\" class=\"post-image\"></a>"
             };
 
-            var timestamp = DateTime.Now.AddMinutes(new Random().Next(-15, -12));
+            var timestamp = DateTime.Now.AddMinutes(-10);
 
             var messages = new List<Message>()
             {
