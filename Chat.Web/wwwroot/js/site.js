@@ -34,6 +34,10 @@
         $(this).find("input[type=text]:first-child").focus();
     });
 
+    $("#rename-room-modal").on("show.bs.modal", function () {
+        $(this).find("#newRoomName").val($("#joinedRoom").text());
+    });
+
     $('.modal').on('hidden.bs.modal', function () {
         $(".modal-body input:not(#newRoomName)").val("");
     });
