@@ -55,7 +55,8 @@
                 </button>
             </div>
         </div>
-        <div class="messages-container">
+        <div class="messages-container position-relative">
+            <div class="no-messages-info" data-bind="if: chatMessages().length == 0">There are no messages.</div>
             <ul class="list-unstyled" id="messages-list" data-bind="foreach: chatMessages">
                 <li>
                     <div class="message-item" data-bind="css: { ismine: isMine() === true }">

@@ -105,6 +105,12 @@
   flex-grow: 1;
   padding: 10px;
 }
+.main-content .no-messages-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+}
 
 .message-item {
   margin-bottom: 12px;
