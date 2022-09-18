@@ -1,6 +1,8 @@
 # SignalR-Chat
 A real-time chat application using .NET 6, SignalR and KnockoutJS. Available for Web and Desktop
 
+Live Demo: https://demo2-kouki.azurewebsites.net/
+
 ![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/main/Chat.Web/wwwroot/images/screenshots/web.png)
 
 ## Features
