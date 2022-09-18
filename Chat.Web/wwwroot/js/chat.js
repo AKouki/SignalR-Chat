@@ -80,7 +80,7 @@
         self.myAvatar = ko.observable("");
         self.isLoading = ko.observable(true);
         self.showAvatar = ko.computed(function () {
-            return self.isLoading() == false;
+            return self.isLoading() == false && self.myAvatar() != null;
         });
 
         self.onEnter = function (d, e) {
