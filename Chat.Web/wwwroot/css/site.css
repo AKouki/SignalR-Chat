@@ -385,6 +385,7 @@ a {
   width: 500px;
   right: 25px;
   top: 25px;
+  z-index: 9999;
 }
 
 .form-label {
