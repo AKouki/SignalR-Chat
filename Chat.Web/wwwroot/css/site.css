@@ -51,6 +51,18 @@
   content: "#";
   margin-right: 2px;
 }
+.sidebar .divider {
+  background-color: rgba(255, 255, 255, 0.2);
+  height: 1px;
+}
+.sidebar .btn-reset {
+  align-self: flex-start;
+  font-size: 14px;
+  margin: 16px 10px;
+}
+.sidebar .btn-reset:hover {
+  text-decoration: underline;
+}
 .sidebar .profile {
   display: flex;
   justify-content: space-between;
@@ -104,6 +116,12 @@
   overflow-y: auto;
   flex-grow: 1;
   padding: 10px;
+}
+.main-content .no-messages-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
 }
 
 .message-item {
@@ -228,16 +246,6 @@
 }
 .disabled svg {
   pointer-events: none;
-}
-
-.btn-reset {
-  padding: 2px 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 10px;
-  font-size: 14px;
-}
-.btn-reset:hover {
-  text-decoration: underline;
 }
 
 .users-container {

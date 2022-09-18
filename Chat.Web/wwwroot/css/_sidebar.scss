@@ -66,6 +66,21 @@ $text-color: rgba(white, 0.85);
         }
     }
 
+    .divider {
+        background-color: rgba(white, 0.2);
+        height: 1px;
+    }
+
+    .btn-reset {
+        align-self: flex-start;
+        font-size: 14px;
+        margin: 16px 10px;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
     .profile {
         display: flex;
         justify-content: space-between;
