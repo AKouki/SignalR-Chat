@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using Chat.Web.Models;
 using Chat.Web.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Chat.Web.Mappings
 {
@@ -12,7 +8,9 @@ namespace Chat.Web.Mappings
     {
         public RoomProfile()
         {
-            CreateMap<Room, RoomViewModel>();
+            CreateMap<Room, RoomViewModel>()
+                .ForMember(dst => dst.Admin, opt => opt.MapFrom(x => x.Admin.UserName));
+
             CreateMap<RoomViewModel, Room>();
         }
     }

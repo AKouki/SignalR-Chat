@@ -22,16 +22,16 @@
         </div>
         <ul class="rooms list-unstyled" id="rooms-list" data-bind="foreach: chatRooms">
             <li>
-                <a href="#" data-bind="text: name, attr: { 'data-roomId': id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom() == name()}"></a>
+                <a href="#" data-bind="text: name, attr: { 'data-roomId': id }, click: $parent.joinRoom.bind($data), css: { active: $root.joinedRoom()?.name() == name()}"></a>
             </li>
         </ul>
         <div class="divider"></div>
         <a class="btn-reset" asp-action="Index" asp-controller="Reset">Reset Data</a>
         <div class="profile">
             <div class="d-flex align-items-center flex-grow-1">
-                <span class="avatar me-2 text-uppercase" data-bind="visible: myAvatar() == null, text: myName()[0]"></span>
-                <img class="avatar me-2" data-bind="visible: showAvatar(), attr: { src: showAvatar() ? '/avatars/' + myAvatar() : '' }" />
-                <a asp-area="Identity" asp-page="/Account/Manage/Index" data-bind="text: myName"></a>
+                <span class="avatar me-2 text-uppercase" data-bind="visible: !showAvatar(), text: myProfile()?.fullName()[0]"></span>
+                <img class="avatar me-2" data-bind="visible: showAvatar(), attr: { src: showAvatar() ? '/avatars/' + myProfile()?.avatar() : '' }" />
+                <a asp-area="Identity" asp-page="/Account/Manage/Index" data-bind="text: myProfile()?.fullName()"></a>
             </div>
             <div>
                 <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
@@ -42,13 +42,13 @@
             </div>
         </div>
     </div>
-    <div class="main-content" data-bind="visible: joinedRoom().length == 0">
+    <div class="main-content" data-bind="visible: joinedRoom() == null">
         <span class="m-auto">Please select room to join!</span>
     </div>
-    <div class="main-content" data-bind="visible: joinedRoom().length > 0">
+    <div class="main-content" data-bind="visible: joinedRoom() != null">
         <div class="header">
-            <h5 id="joinedRoom" data-bind="text: joinedRoom()">Lobby</h5>
-            <div class="room-actions">
+            <h5 id="joinedRoom" data-bind="text: joinedRoom()?.name()">Lobby</h5>
+            <div class="room-actions" data-bind="visible: showRoomActions()">
                 <button type="button" class="btn btn-link text-secondary px-1" data-bs-toggle="modal" data-bs-target="#rename-room-modal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                 </button>
@@ -62,11 +62,11 @@
             <ul class="list-unstyled" id="messages-list" data-bind="foreach: chatMessages">
                 <li>
                     <div class="message-item" data-bind="css: { ismine: isMine() === true }">
-                        <span class="avatar avatar-lg mx-2 text-uppercase" data-bind="visible: avatar() == null, text: from()[0]"></span>
+                        <span class="avatar avatar-lg mx-2 text-uppercase" data-bind="visible: avatar() == null, text: fromFullName()[0]"></span>
                         <img class="avatar avatar-lg mx-2" data-bind="visible: avatar() != null, attr: { src: avatar() != null ? '/avatars/' + avatar() : '' }" />
                         <div class="message-content">
                             <div class="message-info d-flex flex-wrap align-items-center">
-                                <span class="author" data-bind="text: from"></span>
+                                <span class="author" data-bind="text: fromFullName"></span>
                                 <span class="timestamp" data-bind="text: timestampRelative, attr: { 'data-bs-title': timestampFull }" data-bs-toggle="tooltip" data-bs-placement="top"></span>
                             </div>
                             <div class="content" data-bind="html: content"></div>
@@ -94,7 +94,7 @@
                     <label for="UploadedFile" class="custom-file-upload">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     </label>
-                    <input type="hidden" name="RoomId" data-bind="value: joinedRoomId()" />
+                    <input type="hidden" name="RoomId" data-bind="value: joinedRoom()?.id()" />
                     <input type="file" id="UploadedFile" name="File" accept=".jpg,.jpeg,.png" data-bind="event: {change: uploadFiles}">
                 </form>*@
                 <a role="button" class="disabled" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Disabled for security reasons.">
@@ -137,12 +137,12 @@
             <h5>Who's Here (<span data-bind="text: filteredChatUsers().length">0</span>)</h5>
         </div>
         <ul class="list-unstyled flex-grow-1" id="users-list" data-bind="foreach: filteredChatUsers">
-            <li data-bind="attr: { 'data-username': userName}">
+            <li data-bind="attr: { 'data-username': userName }">
                 <div class="user">
-                    <span class="avatar me-2 text-uppercase" data-bind="visible: avatar() == null, text: displayName()[0]"></span>
+                    <span class="avatar me-2 text-uppercase" data-bind="visible: avatar() == null, text: fullName()[0]"></span>
                     <img class="avatar me-2" data-bind="visible: avatar() != null, attr: { src: avatar() != null ? '/avatars/' + avatar() : '' }" />
                     <div class="user-info">
-                        <span class="name" data-bind="text: displayName"></span>
+                        <span class="name" data-bind="text: fullName"></span>
                         <span class="device" data-bind="text: device"></span>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="newRoomName" maxlength="100" data-bind="value: $root.joinedRoom()" />
+                <input type="text" class="form-control" id="newRoomName" maxlength="100" data-bind="value: $root.joinedRoom()?.name()" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>

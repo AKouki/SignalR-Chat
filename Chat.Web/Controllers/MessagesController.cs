@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Chat.Web.Data;
@@ -71,7 +70,7 @@ namespace Chat.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Message>> Create(MessageViewModel messageViewModel)
+        public async Task<ActionResult<Message>> Create(MessageViewModel viewModel)
         {
             if (ShouldReset())
             {
@@ -81,13 +80,13 @@ namespace Chat.Web.Controllers
             else
             {
                 var user = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
-                var room = _context.Rooms.FirstOrDefault(r => r.Name == messageViewModel.Room);
+                var room = _context.Rooms.FirstOrDefault(r => r.Name == viewModel.Room);
                 if (room == null)
                     return BadRequest();
 
                 var msg = new Message()
                 {
-                    Content = Regex.Replace(messageViewModel.Content, @"<.*?>", string.Empty),
+                    Content = Regex.Replace(viewModel.Content, @"<.*?>", string.Empty),
                     FromUser = user,
                     ToRoom = room,
                     Timestamp = DateTime.Now
