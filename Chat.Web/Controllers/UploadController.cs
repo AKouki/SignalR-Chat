@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,7 +11,6 @@ using Chat.Web.Models;
 using Chat.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -51,14 +49,14 @@ namespace Chat.Web.Controllers
 
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upload([FromForm] UploadViewModel uploadViewModel)
+        public async Task<IActionResult> Upload([FromForm] UploadViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                if (!_fileValidator.IsValid(uploadViewModel.File))
+                if (!_fileValidator.IsValid(viewModel.File))
                     return BadRequest("Validation failed!");
 
-                var fileName = DateTime.Now.ToString("yyyymmddMMss") + "_" + Path.GetFileName(uploadViewModel.File.FileName);
+                var fileName = DateTime.Now.ToString("yyyymmddMMss") + "_" + Path.GetFileName(viewModel.File.FileName);
                 var folderPath = Path.Combine(_environment.WebRootPath, "uploads");
                 var filePath = Path.Combine(folderPath, fileName);
                 if (!Directory.Exists(folderPath))
@@ -66,11 +64,11 @@ namespace Chat.Web.Controllers
 
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    await uploadViewModel.File.CopyToAsync(fileStream);
+                    await viewModel.File.CopyToAsync(fileStream);
                 }
 
                 var user = _context.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-                var room = _context.Rooms.Where(r => r.Id == uploadViewModel.RoomId).FirstOrDefault();
+                var room = _context.Rooms.Where(r => r.Id == viewModel.RoomId).FirstOrDefault();
                 if (user == null || room == null)
                     return NotFound();
 

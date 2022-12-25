@@ -10,32 +10,31 @@
     });
 
     connection.on("newMessage", function (messageView) {
-        var isMine = messageView.from === viewModel.myName();
-        var message = new ChatMessage(messageView.id, messageView.content, messageView.timestamp, messageView.from, isMine, messageView.avatar);
+        var isMine = messageView.fromUserName === viewModel.myProfile().userName();
+        var message = new ChatMessage(messageView.id, messageView.content, messageView.timestamp, messageView.fromUserName, messageView.fromFullName, isMine, messageView.avatar);
         viewModel.chatMessages.push(message);
         $(".messages-container").animate({ scrollTop: $(".messages-container")[0].scrollHeight }, 1000);
     });
 
-    connection.on("getProfileInfo", function (displayName, avatar) {
-        viewModel.myName(displayName);
-        viewModel.myAvatar(avatar);
+    connection.on("getProfileInfo", function (user) {
+        viewModel.myProfile(new ProfileInfo(user.userName, user.fullName, user.avatar));
         viewModel.isLoading(false);
     });
 
     connection.on("addUser", function (user) {
-        viewModel.userAdded(new ChatUser(user.username, user.fullName, user.avatar, user.currentRoom, user.device));
+        viewModel.userAdded(new ChatUser(user.userName, user.fullName, user.avatar, user.currentRoom, user.device));
     });
 
     connection.on("removeUser", function (user) {
-        viewModel.userRemoved(user.username);
+        viewModel.userRemoved(user.userName);
     });
 
     connection.on("addChatRoom", function (room) {
-        viewModel.roomAdded(new ChatRoom(room.id, room.name));
+        viewModel.roomAdded(new ChatRoom(room.id, room.name, room.admin));
     });
 
     connection.on("updateChatRoom", function (room) {
-        viewModel.roomUpdated(new ChatRoom(room.id, room.name));
+        viewModel.roomUpdated(new ChatRoom(room.id, room.name, room.admin));
     });
 
     connection.on("removeChatRoom", function (id) {
@@ -56,7 +55,7 @@
         $("#errorAlert").removeClass("d-none").show().delay(5000).fadeOut(500);
 
         if (viewModel.chatRooms().length == 0) {
-            viewModel.joinedRoom("");
+            viewModel.joinedRoom(null);
         }
         else {
             // Join to the first room in list
@@ -73,14 +72,17 @@
         self.chatRooms = ko.observableArray([]);
         self.chatUsers = ko.observableArray([]);
         self.chatMessages = ko.observableArray([]);
-        self.joinedRoom = ko.observable("");
-        self.joinedRoomId = ko.observable("");
+        self.joinedRoom = ko.observable();
         self.serverInfoMessage = ko.observable("");
-        self.myName = ko.observable("");
-        self.myAvatar = ko.observable("");
+        self.myProfile = ko.observable();
         self.isLoading = ko.observable(true);
+
         self.showAvatar = ko.computed(function () {
-            return self.isLoading() == false && self.myAvatar() != null;
+            return self.isLoading() == false && self.myProfile().avatar() != null;
+        });
+
+        self.showRoomActions = ko.computed(function () {
+            return self.joinedRoom()?.admin() == self.myProfile()?.userName();
         });
 
         self.onEnter = function (d, e) {
@@ -95,8 +97,8 @@
                 return self.chatUsers();
             } else {
                 return ko.utils.arrayFilter(self.chatUsers(), function (user) {
-                    var displayName = user.displayName().toLowerCase();
-                    return displayName.includes(self.filter().toLowerCase());
+                    var fullName = user.fullName().toLowerCase();
+                    return fullName.includes(self.filter().toLowerCase());
                 });
             }
         });
@@ -115,12 +117,12 @@
             self.message("");
         }
 
-        self.sendToRoom = function (roomName, message) {
-            if (roomName.length > 0 && message.length > 0) {
+        self.sendToRoom = function (room, message) {
+            if (room.name()?.length > 0 && message.length > 0) {
                 fetch('/api/Messages', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ room: roomName, content: message })
+                    body: JSON.stringify({ room: room.name(), content: message })
                 });
             }
         }
@@ -133,8 +135,7 @@
 
         self.joinRoom = function (room) {
             connection.invoke("Join", room.name()).then(function () {
-                self.joinedRoom(room.name());
-                self.joinedRoomId(room.id());
+                self.joinedRoom(room);
                 self.userList();
                 self.messageHistory();
             });
@@ -146,7 +147,7 @@
                 .then(data => {
                     self.chatRooms.removeAll();
                     for (var i = 0; i < data.length; i++) {
-                        self.chatRooms.push(new ChatRoom(data[i].id, data[i].name));
+                        self.chatRooms.push(new ChatRoom(data[i].id, data[i].name, data[i].admin));
                     }
 
                     if (self.chatRooms().length > 0)
@@ -155,10 +156,10 @@
         }
 
         self.userList = function () {
-            connection.invoke("GetUsers", self.joinedRoom()).then(function (result) {
+            connection.invoke("GetUsers", self.joinedRoom()?.name()).then(function (result) {
                 self.chatUsers.removeAll();
                 for (var i = 0; i < result.length; i++) {
-                    self.chatUsers.push(new ChatUser(result[i].username,
+                    self.chatUsers.push(new ChatUser(result[i].userName,
                         result[i].fullName,
                         result[i].avatar,
                         result[i].currentRoom,
@@ -177,7 +178,7 @@
         }
 
         self.editRoom = function () {
-            var roomId = self.joinedRoomId();
+            var roomId = self.joinedRoom().id();
             var roomName = $("#newRoomName").val();
             fetch('/api/Rooms/' + roomId, {
                 method: 'PUT',
@@ -187,10 +188,10 @@
         }
 
         self.deleteRoom = function () {
-            fetch('/api/Rooms/' + self.joinedRoomId(), {
+            fetch('/api/Rooms/' + self.joinedRoom().id(), {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: self.joinedRoomId() })
+                body: JSON.stringify({ id: self.joinedRoom().id() })
             });
         }
 
@@ -205,16 +206,17 @@
         }
 
         self.messageHistory = function () {
-            fetch('/api/Messages/Room/' + viewModel.joinedRoom())
+            fetch('/api/Messages/Room/' + viewModel.joinedRoom().name())
                 .then(response => response.json())
                 .then(data => {
                     self.chatMessages.removeAll();
                     for (var i = 0; i < data.length; i++) {
-                        var isMine = data[i].from == self.myName();
+                        var isMine = data[i].fromUserName == self.myProfile().userName();
                         self.chatMessages.push(new ChatMessage(data[i].id,
                             data[i].content,
                             data[i].timestamp,
-                            data[i].from,
+                            data[i].fromUserName,
+                            data[i].fromFullName,
                             isMine,
                             data[i].avatar))
                     }
@@ -234,7 +236,7 @@
 
             room.name(updatedRoom.name());
 
-            if (self.joinedRoomId() == room.id()) {
+            if (self.joinedRoom().id() == room.id()) {
                 self.joinRoom(room);
             }
         }
@@ -288,22 +290,23 @@
         }
     }
 
-    function ChatRoom(id, name) {
+    function ChatRoom(id, name, admin) {
         var self = this;
         self.id = ko.observable(id);
         self.name = ko.observable(name);
+        self.admin = ko.observable(admin);
     }
 
-    function ChatUser(userName, displayName, avatar, currentRoom, device) {
+    function ChatUser(userName, fullName, avatar, currentRoom, device) {
         var self = this;
         self.userName = ko.observable(userName);
-        self.displayName = ko.observable(displayName);
+        self.fullName = ko.observable(fullName);
         self.avatar = ko.observable(avatar);
         self.currentRoom = ko.observable(currentRoom);
         self.device = ko.observable(device);
     }
 
-    function ChatMessage(id, content, timestamp, from, isMine, avatar) {
+    function ChatMessage(id, content, timestamp, fromUserName, fromFullName, isMine, avatar) {
         var self = this;
         self.id = ko.observable(id);
         self.content = ko.observable(content);
@@ -330,8 +333,16 @@
             var { fullDateTime } = formatDate(date);
             return fullDateTime;
         });
-        self.from = ko.observable(from);
+        self.fromUserName = ko.observable(fromUserName);
+        self.fromFullName = ko.observable(fromFullName);
         self.isMine = ko.observable(isMine);
+        self.avatar = ko.observable(avatar);
+    }
+
+    function ProfileInfo(userName, fullName, avatar) {
+        var self = this;
+        self.userName = ko.observable(userName);
+        self.fullName = ko.observable(fullName);
         self.avatar = ko.observable(avatar);
     }
 

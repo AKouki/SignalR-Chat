@@ -32,7 +32,7 @@ namespace Chat.Web.Hubs
             if (_ConnectionsMap.TryGetValue(receiverName, out string userId))
             {
                 // Who is the sender;
-                var sender = _Connections.Where(u => u.Username == IdentityName).First();
+                var sender = _Connections.Where(u => u.UserName == IdentityName).First();
 
                 if (!string.IsNullOrEmpty(message.Trim()))
                 {
@@ -40,7 +40,8 @@ namespace Chat.Web.Hubs
                     var messageViewModel = new MessageViewModel()
                     {
                         Content = Regex.Replace(message, @"<.*?>", string.Empty),
-                        From = sender.FullName,
+                        FromUserName = sender.UserName,
+                        FromFullName = sender.FullName,
                         Avatar = sender.Avatar,
                         Room = "",
                         Timestamp = DateTime.Now
@@ -57,7 +58,7 @@ namespace Chat.Web.Hubs
         {
             try
             {
-                var user = _Connections.Where(u => u.Username == IdentityName).FirstOrDefault();
+                var user = _Connections.Where(u => u.UserName == IdentityName).FirstOrDefault();
                 if (user != null && user.CurrentRoom != roomName)
                 {
                     // Remove user from others list
@@ -98,13 +99,13 @@ namespace Chat.Web.Hubs
                 userViewModel.Device = GetDevice();
                 userViewModel.CurrentRoom = "";
 
-                if (!_Connections.Any(u => u.Username == IdentityName))
+                if (!_Connections.Any(u => u.UserName == IdentityName))
                 {
                     _Connections.Add(userViewModel);
                     _ConnectionsMap.Add(IdentityName, Context.ConnectionId);
                 }
 
-                Clients.Caller.SendAsync("getProfileInfo", user.FullName, user.Avatar);
+                Clients.Caller.SendAsync("getProfileInfo", userViewModel);
             }
             catch (Exception ex)
             {
@@ -117,14 +118,14 @@ namespace Chat.Web.Hubs
         {
             try
             {
-                var user = _Connections.Where(u => u.Username == IdentityName).First();
+                var user = _Connections.Where(u => u.UserName == IdentityName).First();
                 _Connections.Remove(user);
 
                 // Tell other users to remove you from their list
                 Clients.OthersInGroup(user.CurrentRoom).SendAsync("removeUser", user);
 
                 // Remove mapping
-                _ConnectionsMap.Remove(user.Username);
+                _ConnectionsMap.Remove(user.UserName);
             }
             catch (Exception ex)
             {
