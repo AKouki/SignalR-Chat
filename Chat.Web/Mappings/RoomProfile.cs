@@ -9,7 +9,7 @@ namespace Chat.Web.Mappings
         public RoomProfile()
         {
             CreateMap<Room, RoomViewModel>()
-                .ForMember(dest => dest.Admin, opt => opt.MapFrom(src => src.Admin.UserName));
+                .ForMember(dst => dst.Admin, opt => opt.MapFrom(x => x.Admin.UserName));
 
             CreateMap<RoomViewModel, Room>();
         }
