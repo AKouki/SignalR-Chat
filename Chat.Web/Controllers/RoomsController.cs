@@ -127,7 +127,7 @@ namespace Chat.Web.Controllers
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("removeChatRoom", room.Id);
-            await _hubContext.Clients.Group(room.Name).SendAsync("onRoomDeleted", string.Format("Room {0} has been deleted.\nYou are moved to the first available room!", room.Name));
+            await _hubContext.Clients.Group(room.Name).SendAsync("onRoomDeleted");
 
             return Ok();
         }

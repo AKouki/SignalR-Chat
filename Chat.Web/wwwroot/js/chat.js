@@ -50,18 +50,13 @@
         $("#errorAlert").removeClass("d-none").show().delay(5000).fadeOut(500);
     });
 
-    connection.on("onRoomDeleted", function (message) {
-        viewModel.serverInfoMessage(message);
-        $("#errorAlert").removeClass("d-none").show().delay(5000).fadeOut(500);
-
+    connection.on("onRoomDeleted", function () {
         if (viewModel.chatRooms().length == 0) {
             viewModel.joinedRoom(null);
         }
         else {
-            // Join to the first room in list
-            setTimeout(function () {
-                $("#rooms-list li a")[0].click();
-            }, 50);
+            // Join to the first room from the list
+            viewModel.joinRoom(viewModel.chatRooms()[0]);
         }
     });
 
