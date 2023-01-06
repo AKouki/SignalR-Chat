@@ -480,4 +480,22 @@ body {
   min-width: 250px;
 }
 
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+    position: absolute;
+    height: 100%;
+    left: 0;
+    z-index: 999;
+  }
+  .users-container {
+    display: none;
+    position: absolute;
+    height: 100%;
+    right: 0;
+    z-index: 999;
+    background: #dfdfdf;
+  }
+}
+
 /*# sourceMappingURL=site.css.map */
