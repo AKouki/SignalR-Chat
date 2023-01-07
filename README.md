@@ -1,7 +1,7 @@
 # SignalR-Chat
-A real-time chat application using .NET 7, SignalR and KnockoutJS. Available for Web and Desktop.
+A real-time chat application using .NET 7, SignalR and KnockoutJS.
 
-![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/main/Chat.Web/wwwroot/images/screenshots/web.png)
+![](https://raw.githubusercontent.com/AKouki/SignalR-Chat/main/src/Chat.Web/wwwroot/images/screenshots/web.png)
 
 ## Features
 * Group chat
@@ -11,16 +11,13 @@ A real-time chat application using .NET 7, SignalR and KnockoutJS. Available for
 * Chat Rooms
 
 ## Getting Started
-In order to run Desktop application you need first to run Chat.Web project which is the Chat Service
+
+To run the application:
 
 1. Grab the Project
 2. Open Visual Studio as Administrator and load the Solution
 3. Resolve any missing/required nuget package
-
-### For Chat.Web
-1. Build Database. Open `Package Manager Console` and run the following commands: <br />
+4. Build Database. Open `Package Manager Console` and run the following commands: <br />
 `update-database` <br />
-2. That's all... Run the Project!
+5. That's all... Run the Project!
 
-### For Chat.Desktop
-1. Run the desktop application: `Right-Click -> Debug -> Start new instance`
