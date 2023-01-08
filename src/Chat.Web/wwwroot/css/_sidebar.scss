@@ -35,9 +35,15 @@ $text-color: rgba(white, 0.85);
             text-transform: uppercase;
         }
 
-        i {
-            color: white;
-            font-size: 14px;
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            a {
+                display: flex;
+                margin-right: 10px;
+            }
         }
     }
 

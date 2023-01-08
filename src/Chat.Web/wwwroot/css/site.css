@@ -28,9 +28,14 @@
   margin: 0;
   text-transform: uppercase;
 }
-.sidebar .header i {
-  color: white;
-  font-size: 14px;
+.sidebar .header .actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sidebar .header .actions a {
+  display: flex;
+  margin-right: 10px;
 }
 .sidebar ul {
   overflow-y: auto;
@@ -141,7 +146,8 @@
 .message-item .message-content .content img {
   max-width: 270px;
   max-height: 270px;
-  object-fit: contain;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .message-item .message-content .content .post-image {
   width: 100%;
@@ -440,7 +446,8 @@ form .btn {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   width: 32px;
   height: 32px;
   background: #549d54;
@@ -459,14 +466,14 @@ form .btn {
 }
 
 body {
-  background: white;
+  background-color: white;
 }
 
 .app {
   display: flex;
   height: 100vh;
   justify-content: space-between;
-  background: white;
+  background-color: white;
 }
 .app .sidebar {
   width: 270px;
@@ -480,4 +487,53 @@ body {
   min-width: 250px;
 }
 
-/*# sourceMappingURL=site.css.map */
+#expand-users-list,
+#expand-sidebar {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .app .sidebar {
+    width: 200px;
+    min-width: 200px;
+  }
+  .app .users-container {
+    width: 180px;
+    min-width: 180px;
+  }
+}
+@media screen and (max-width: 575.98px) {
+  .app .sidebar,
+.app .users-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    overflow: hidden;
+  }
+  .app .sidebar {
+    height: 60px;
+  }
+  .app .sidebar.open {
+    height: 100%;
+  }
+  .app .main-content {
+    margin-top: 60px;
+  }
+  .app .users-container {
+    margin-top: 60px;
+    height: 0;
+    background-color: white;
+  }
+  .app .users-container.open {
+    height: calc(100% - 60px);
+  }
+  .sidebar .header {
+    min-height: 60px;
+  }
+  #expand-users-list,
+#expand-sidebar {
+    display: flex;
+  }
+}/*# sourceMappingURL=site.css.map */

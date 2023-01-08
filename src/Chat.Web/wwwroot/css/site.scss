@@ -4,15 +4,17 @@
 @import "_auth.scss";
 @import "_misc.scss";
 
+$header-height: 60px;
+
 body {
-    background: white;
+    background-color: white;
 }
 
 .app {
     display: flex;
     height: 100vh;
     justify-content: space-between;
-    background: white;
+    background-color: white;
 
     .sidebar {
         width: 270px;
@@ -26,5 +28,71 @@ body {
     .users-container {
         width: 250px;
         min-width: 250px;
+    }
+}
+
+#expand-users-list,
+#expand-sidebar {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .app {
+        .sidebar {
+            width: 200px;
+            min-width: 200px;
+        }
+        
+        .users-container {
+            width: 180px;
+            min-width: 180px;
+        }
+    }
+}
+
+@media screen and (max-width: 575.98px) {
+    .app {
+        .sidebar,
+        .users-container {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            height: $header-height;
+
+            &.open {
+                height: 100%;
+            }
+        }
+
+        .main-content {
+            margin-top: $header-height;
+        }
+
+        .users-container {
+            margin-top: $header-height;
+            height: 0;
+            background-color: white;
+
+            &.open {
+                height: calc(100% - $header-height);
+            }
+        }
+    }
+
+    @at-root .sidebar {
+        .header {
+            min-height: $header-height;
+        }
+    }
+
+    #expand-users-list,
+    #expand-sidebar {
+        display: flex;
     }
 }
