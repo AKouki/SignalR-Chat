@@ -30,6 +30,20 @@
         $("#emojis-container").addClass("d-none");
     });
 
+    $("#expand-sidebar").click(function () {
+        $(".sidebar").toggleClass("open");
+        $(".users-container").removeClass("open");
+    });
+
+    $("#expand-users-list").click(function () {
+        $(".users-container").toggleClass("open");
+        $(".sidebar").removeClass("open");
+    });
+
+    $(document).on("click", ".sidebar.open ul li a, #users-list li", function () {
+        $(".sidebar, .users-container").removeClass("open");
+    });
+
     $(".modal").on("shown.bs.modal", function () {
         $(this).find("input[type=text]:first-child").focus();
     });
